@@ -346,8 +346,8 @@ export default function RitLogApp() {
 
   return (
     <div className="min-h-screen bg-gray-100" style={{fontSize: '16px'}}>
-      {/* Header */}
-      <div style={{background: primaryColor}} className="text-white p-4">
+      {/* Header - with safe area padding for iOS notch */}
+      <div style={{background: primaryColor, paddingTop: 'env(safe-area-inset-top, 0px)'}} className="text-white p-4">
         <div className="flex justify-between items-center max-w-lg mx-auto">
           <div className="flex items-center gap-2">
             <CaddyIcon size={32} color="white" />
@@ -450,24 +450,13 @@ export default function RitLogApp() {
               <span>Nieuwe Rit</span>
             </div>
             
-            {/* Inspreken knop */}
-            <button onClick={toggleListening}
-              className={`w-full py-4 rounded-lg font-medium text-white text-lg mb-2 flex items-center justify-center gap-2 ${isListening ? 'bg-red-500 animate-pulse' : 'bg-blue-500'}`}>
-              {isListening ? '⏹ Stop opname...' : '🎤 Inspreken'}
-            </button>
-            
-            {/* Voorbeeld tekst */}
-            <div className="text-sm text-gray-500 text-center mb-4 px-2 py-2 bg-gray-50 rounded-lg">
-              {transcript ? (
-                <span className="text-blue-600 font-medium">"{transcript}"</span>
-              ) : (
-                <>
-                  <div className="font-medium text-gray-700 mb-1">💡 Voorbeelden:</div>
-                  <div>"Amsterdam 120 km 66 euro"</div>
-                  <div>"Utrecht Ede 2 uur 64 euro"</div>
-                  <div className="mt-1 text-xs text-gray-400">Houten-...-Houten wordt automatisch toegevoegd</div>
-                </>
-              )}
+            {/* Tip voor spraak invoer */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+              <div className="text-center text-blue-700">
+                <div className="font-medium mb-1">💡 Tip: Gebruik spraak!</div>
+                <div className="text-sm">Tik op het Route veld en gebruik de <span className="font-bold">🎤 op je toetsenbord</span></div>
+                <div className="text-xs text-blue-500 mt-1">↓ Zeg bijv: "Amsterdam Utrecht Ede 120 km 66 euro"</div>
+              </div>
             </div>
             
             {/* Per km / Per uur toggle */}
@@ -634,7 +623,7 @@ export default function RitLogApp() {
       
       <div className="text-center py-6 text-sm text-gray-400 flex items-center justify-center gap-2">
         <CaddyIcon size={20} color="#9ca3af" /> 
-        <span>RitLog v2.2 • Jekel Dienstverlening</span>
+        <span>RitLog v2.3 • Jekel Dienstverlening</span>
       </div>
     </div>
   );
