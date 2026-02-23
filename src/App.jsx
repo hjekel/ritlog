@@ -5,6 +5,7 @@ const TRANSLATIONS = {
   nl: {
     maanden: ['Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni', 'Juli', 'Augustus', 'September', 'Oktober', 'November', 'December'],
     dagen: ['Zondag', 'Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterdag'],
+    dagenKort: ['Zo', 'Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za'],
     ritten: 'ritten',
     rit: 'Rit',
     log: 'Log',
@@ -46,11 +47,16 @@ const TRANSLATIONS = {
     verwijderd: 'VERWIJDERD',
     vulRouteIn: 'Vul een route in',
     konNietBerekenen: 'Kon bedrag niet berekenen',
-    bevestigVerwijderen: 'Verwijderen?'
+    bevestigVerwijderen: 'Verwijderen?',
+    kalender: 'Kalender',
+    gewerkt: 'Gewerkt',
+    nietGewerkt: 'Niet gewerkt',
+    totaal: 'Totaal'
   },
   en: {
     maanden: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
     dagen: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+    dagenKort: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
     ritten: 'trips',
     rit: 'Trip',
     log: 'Log',
@@ -92,7 +98,11 @@ const TRANSLATIONS = {
     verwijderd: 'DELETED',
     vulRouteIn: 'Enter a route',
     konNietBerekenen: 'Could not calculate amount',
-    bevestigVerwijderen: 'Delete?'
+    bevestigVerwijderen: 'Delete?',
+    kalender: 'Calendar',
+    gewerkt: 'Worked',
+    nietGewerkt: 'Not worked',
+    totaal: 'Total'
   }
 };
 
@@ -154,6 +164,100 @@ const berekenKilometers = (route) => {
   const verste = gevonden[0].km;
   const extra = gevonden.length > 1 ? (gevonden.length - 1) * 15 : 0;
   return Math.round((verste * 2) + extra);
+};
+
+// Kalender component
+const Kalender = ({ maand, jaar, ritten, t, darkMode, primaryColor }) => {
+  const eersteDag = new Date(jaar, maand, 1);
+  const laatsteDag = new Date(jaar, maand + 1, 0);
+  const aantalDagen = laatsteDag.getDate();
+  const startDag = eersteDag.getDay(); // 0 = zondag
+  
+  // Maak set van dagen met ritten
+  const ritDagen = new Set(ritten.map(r => r.dagNummer));
+  
+  // Maak kalender grid
+  const weken = [];
+  let week = [];
+  
+  // Lege cellen voor dagen voor de 1e
+  for (let i = 0; i < startDag; i++) {
+    week.push(null);
+  }
+  
+  // Dagen van de maand
+  for (let dag = 1; dag <= aantalDagen; dag++) {
+    week.push(dag);
+    if (week.length === 7) {
+      weken.push(week);
+      week = [];
+    }
+  }
+  
+  // Laatste week aanvullen
+  if (week.length > 0) {
+    while (week.length < 7) week.push(null);
+    weken.push(week);
+  }
+  
+  const vandaag = new Date();
+  const isHuidigeMaand = vandaag.getMonth() === maand && vandaag.getFullYear() === jaar;
+  const vandaagDag = vandaag.getDate();
+  
+  return (
+    <div className="rounded-xl shadow overflow-hidden mb-4" style={{background: darkMode ? '#16213e' : 'white'}}>
+      <div className="p-3 border-b" style={{borderColor: darkMode ? '#374151' : '#e5e7eb'}}>
+        <div className="font-bold flex items-center gap-2" style={{color: primaryColor}}>
+          📅 {t.kalender}
+        </div>
+      </div>
+      <div className="p-3">
+        {/* Dag headers */}
+        <div className="grid grid-cols-7 gap-1 mb-2">
+          {t.dagenKort.map((dag, i) => (
+            <div key={i} className="text-center text-xs font-medium" style={{color: darkMode ? '#9ca3af' : '#6b7280'}}>
+              {dag}
+            </div>
+          ))}
+        </div>
+        {/* Kalender grid */}
+        {weken.map((week, wi) => (
+          <div key={wi} className="grid grid-cols-7 gap-1 mb-1">
+            {week.map((dag, di) => {
+              if (!dag) return <div key={di} className="h-8" />;
+              
+              const heeftRit = ritDagen.has(dag);
+              const isVandaag = isHuidigeMaand && dag === vandaagDag;
+              const isVerleden = new Date(jaar, maand, dag) < new Date(vandaag.getFullYear(), vandaag.getMonth(), vandaag.getDate());
+              
+              return (
+                <div 
+                  key={di} 
+                  className={`h-8 rounded flex items-center justify-center text-sm relative ${isVandaag ? 'ring-2 ring-offset-1' : ''}`}
+                  style={{
+                    background: heeftRit ? '#22c55e' : (isVerleden ? '#ef4444' : (darkMode ? '#374151' : '#f3f4f6')),
+                    color: heeftRit || isVerleden ? 'white' : (darkMode ? '#e4e4e7' : '#374151'),
+                    ringColor: primaryColor
+                  }}
+                >
+                  {dag}
+                </div>
+              );
+            })}
+          </div>
+        ))}
+        {/* Legenda */}
+        <div className="flex justify-center gap-4 mt-3 text-xs" style={{color: darkMode ? '#9ca3af' : '#6b7280'}}>
+          <span className="flex items-center gap-1">
+            <span className="w-3 h-3 rounded bg-green-500"></span> {t.gewerkt}
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="w-3 h-3 rounded bg-red-500"></span> {t.nietGewerkt}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default function RitLogApp() {
@@ -338,7 +442,7 @@ export default function RitLogApp() {
 
   const exportCSV = () => {
     const maandNaam = t.maanden[huidigeMaand];
-    let csv = `${maandNaam},${t.datum},${t.rit},${t.route},${t.km},Totaal\n`;
+    let csv = `${maandNaam},${t.datum},${t.rit},${t.route},${t.km},${t.totaal}\n`;
     maandRitten.forEach(r => csv += `${r.dagNaam},${r.dagNummer},${r.ritNummer},"${r.route}",${r.kilometers || ''},€${r.correctie?.toFixed(0)}\n`);
     csv += `\n,,,${t.exclBTW},,€${totaalExclBTW.toFixed(0)}\n,,,${t.btwLabel},,€${btw.toFixed(0)}\n,,,${t.inclBTW},,€${totaalInclBTW.toFixed(0)}\n`;
     
@@ -353,8 +457,94 @@ export default function RitLogApp() {
     URL.revokeObjectURL(url);
   };
 
+  // PDF Export functie
+  const exportPDF = () => {
+    const maandNaam = t.maanden[huidigeMaand];
+    
+    // Maak HTML content voor PDF
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <title>Jekel Dienstverlening Factuur Bijlage ${maandNaam} ${huidigJaar}</title>
+        <style>
+          @page { size: A4 landscape; margin: 15mm; }
+          body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; margin: 0; padding: 20px; }
+          h1 { color: #E65100; font-size: 16pt; margin-bottom: 20px; }
+          table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+          th { background: #FFD700; color: black; font-weight: bold; text-align: left; padding: 8px; border: 1px solid #ccc; }
+          td { padding: 6px 8px; border: 1px solid #ccc; text-align: left; }
+          tr:nth-child(even) { background: #f9f9f9; }
+          .totals { margin-top: 20px; }
+          .totals td { border: none; padding: 4px 8px; }
+          .totals .label { text-align: right; font-weight: normal; }
+          .totals .amount { text-align: right; }
+          .totals .final { font-weight: bold; font-size: 12pt; border-top: 2px solid #E65100; }
+          .footer { margin-top: 30px; font-size: 9pt; color: #666; }
+        </style>
+      </head>
+      <body>
+        <h1>Declaratie ${maandNaam} ${huidigJaar} - Jekel Dienstverlening</h1>
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 80px;">${maandNaam}</th>
+              <th style="width: 50px;">${t.datum}</th>
+              <th style="width: 40px;">${t.rit}</th>
+              <th>${t.route}</th>
+              <th style="width: 50px; text-align: right;">${t.km}</th>
+              <th style="width: 70px; text-align: right;">${t.totaal}</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${maandRitten.map(r => `
+              <tr>
+                <td>${r.dagNaam}</td>
+                <td>${r.dagNummer}</td>
+                <td>${r.ritNummer}</td>
+                <td>${r.route}</td>
+                <td style="text-align: right;">${r.kilometers || '-'}</td>
+                <td style="text-align: right;">€${r.correctie?.toFixed(0)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        <table class="totals">
+          <tr>
+            <td colspan="4"></td>
+            <td class="label">${t.exclBTW}</td>
+            <td class="amount">€${totaalExclBTW.toFixed(0)}</td>
+          </tr>
+          <tr>
+            <td colspan="4"></td>
+            <td class="label">${t.btwLabel}</td>
+            <td class="amount">€${btw.toFixed(0)}</td>
+          </tr>
+          <tr class="final">
+            <td colspan="4"></td>
+            <td class="label">${t.inclBTW}</td>
+            <td class="amount">€${totaalInclBTW.toFixed(0)}</td>
+          </tr>
+        </table>
+        <div class="footer">
+          Gegenereerd door RitLog v2.7 • ${new Date().toLocaleDateString('nl-NL')}
+        </div>
+      </body>
+      </html>
+    `;
+    
+    // Open print dialog (gebruiker kan als PDF opslaan)
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+    printWindow.onload = () => {
+      printWindow.print();
+    };
+  };
+
   const exportBackupJSON = () => {
-    const data = JSON.stringify({ ritten, logboek, exportDatum: new Date().toISOString(), versie: '2.6' }, null, 2);
+    const data = JSON.stringify({ ritten, logboek, exportDatum: new Date().toISOString(), versie: '2.7' }, null, 2);
     const blob = new Blob([data], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -428,23 +618,37 @@ export default function RitLogApp() {
             <span className="text-2xl">🚐</span>
             <span className="font-bold text-xl">RitLog</span>
           </div>
-          <div className="flex items-center gap-2">
-            {saveStatus && <span className="text-sm bg-white/20 px-2 py-1 rounded">{saveStatus}</span>}
-            {/* Taalwisseling */}
+          <div className="flex items-center gap-1">
+            {saveStatus && <span className="text-sm bg-white/20 px-2 py-1 rounded mr-2">{saveStatus}</span>}
+            {/* 4 aparte knoppen */}
             <button 
-              onClick={() => setLang(lang === 'nl' ? 'en' : 'nl')}
-              className="text-xl bg-white/20 rounded px-2 py-1 hover:bg-white/30 transition"
-              title={lang === 'nl' ? 'Switch to English' : 'Schakel naar Nederlands'}
+              onClick={() => setLang('nl')}
+              className={`text-lg px-2 py-1 rounded transition ${lang === 'nl' ? 'bg-white/40 ring-2 ring-white' : 'bg-white/20 hover:bg-white/30'}`}
+              title="Nederlands"
             >
-              {lang === 'nl' ? '🇳🇱' : '🇬🇧'}
+              🇳🇱
             </button>
-            {/* Dark mode toggle */}
             <button 
-              onClick={() => setDarkMode(!darkMode)}
-              className="text-xl bg-white/20 rounded px-2 py-1 hover:bg-white/30 transition"
-              title={darkMode ? 'Light mode' : 'Dark mode'}
+              onClick={() => setLang('en')}
+              className={`text-lg px-2 py-1 rounded transition ${lang === 'en' ? 'bg-white/40 ring-2 ring-white' : 'bg-white/20 hover:bg-white/30'}`}
+              title="English"
             >
-              {darkMode ? '☀️' : '🌙'}
+              🇬🇧
+            </button>
+            <div className="w-2"></div>
+            <button 
+              onClick={() => setDarkMode(false)}
+              className={`text-lg px-2 py-1 rounded transition ${!darkMode ? 'bg-white/40 ring-2 ring-white' : 'bg-white/20 hover:bg-white/30'}`}
+              title="Light mode"
+            >
+              ☀️
+            </button>
+            <button 
+              onClick={() => setDarkMode(true)}
+              className={`text-lg px-2 py-1 rounded transition ${darkMode ? 'bg-white/40 ring-2 ring-white' : 'bg-white/20 hover:bg-white/30'}`}
+              title="Dark mode"
+            >
+              🌙
             </button>
           </div>
         </div>
@@ -491,14 +695,27 @@ export default function RitLogApp() {
           </div>
         </div>
 
-        {/* LOG - gecombineerd overzicht + activiteiten */}
+        {/* LOG - kalender + ritten + export */}
         {view === 'log' && (
           <div className="space-y-4">
+            {/* Kalender */}
+            <Kalender 
+              maand={huidigeMaand} 
+              jaar={huidigJaar} 
+              ritten={maandRitten} 
+              t={t} 
+              darkMode={darkMode}
+              primaryColor={primaryColor}
+            />
+            
             {/* Rittenlijst */}
             <div className="rounded-xl shadow overflow-hidden" style={{background: cardBg}}>
               <div className="p-4 flex justify-between items-center border-b-2" style={{borderColor: primaryColor}}>
                 <span className="font-bold text-lg" style={{color: primaryColor}}>{t.rit}ten</span>
-                <button onClick={exportCSV} disabled={!maandRitten.length} className="bg-purple-500 text-white px-4 py-2 rounded-lg disabled:bg-gray-300">📄 CSV</button>
+                <div className="flex gap-2">
+                  <button onClick={exportCSV} disabled={!maandRitten.length} className="bg-purple-500 text-white px-3 py-2 rounded-lg disabled:bg-gray-300 text-sm">📄 CSV</button>
+                  <button onClick={exportPDF} disabled={!maandRitten.length} className="bg-red-500 text-white px-3 py-2 rounded-lg disabled:bg-gray-300 text-sm">📑 PDF</button>
+                </div>
               </div>
               {maandRitten.length === 0 ? (
                 <div className="p-8 text-center" style={{color: textMuted}}>
@@ -729,7 +946,7 @@ export default function RitLogApp() {
       
       <div className="text-center py-6 text-sm flex items-center justify-center gap-2" style={{color: textMuted}}>
         <CaddyIcon size={20} color={textMuted} /> 
-        <span>RitLog v2.6 • Jekel Dienstverlening</span>
+        <span>RitLog v2.7 • Jekel Dienstverlening</span>
       </div>
     </div>
   );
