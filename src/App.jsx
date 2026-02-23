@@ -56,7 +56,14 @@ const TRANSLATIONS = {
     gewerkt: 'Gewerkt',
     nietGewerkt: 'Niet gewerkt',
     totaal: 'Totaal',
-    tikOmTeBewerken: 'Tik op een rit om te bewerken'
+    tikOmTeBewerken: 'Tik op een rit om te bewerken',
+    gebruiksaanwijzing: 'Gebruiksaanwijzing',
+    hulpRitToevoegen: 'Vul route in → km en bedrag worden automatisch berekend',
+    hulpRitBewerken: 'Tik op een rit in Log om aan te passen',
+    hulpRitVerwijderen: 'In bewerk-scherm onderaan',
+    hulpFactuur: 'Log → CSV of PDF knop aan einde van de maand',
+    hulpBackup: 'Regelmatig JSON downloaden voor herstel',
+    hulpKalender: 'Groen = gewerkt, Rood = niet gewerkt'
   },
   en: {
     maanden: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
@@ -112,7 +119,14 @@ const TRANSLATIONS = {
     gewerkt: 'Worked',
     nietGewerkt: 'Not worked',
     totaal: 'Total',
-    tikOmTeBewerken: 'Tap a trip to edit'
+    tikOmTeBewerken: 'Tap a trip to edit',
+    gebruiksaanwijzing: 'How to use',
+    hulpRitToevoegen: 'Enter route → km and amount are calculated automatically',
+    hulpRitBewerken: 'Tap a trip in Log to edit',
+    hulpRitVerwijderen: 'At the bottom of edit screen',
+    hulpFactuur: 'Log → CSV or PDF button at end of month',
+    hulpBackup: 'Download JSON regularly for backup',
+    hulpKalender: 'Green = worked, Red = not worked'
   }
 };
 
@@ -712,7 +726,7 @@ export default function RitLogApp() {
           </tr>
         </table>
         <div class="footer">
-          Gegenereerd door RitLog v2.8 • ${new Date().toLocaleDateString('nl-NL')}
+          Gegenereerd door RitLog v2.9 • ${new Date().toLocaleDateString('nl-NL')}
         </div>
       </body>
       </html>
@@ -727,7 +741,7 @@ export default function RitLogApp() {
   };
 
   const exportBackupJSON = () => {
-    const data = JSON.stringify({ ritten, logboek, exportDatum: new Date().toISOString(), versie: '2.8' }, null, 2);
+    const data = JSON.stringify({ ritten, logboek, exportDatum: new Date().toISOString(), versie: '2.9' }, null, 2);
     const blob = new Blob([data], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -1136,13 +1150,25 @@ export default function RitLogApp() {
                 <li>• {t.tarieven} €{TARIEF_PER_KM}/km {lang === 'nl' ? 'of' : 'or'} €{TARIEF_PER_UUR}/{lang === 'nl' ? 'uur' : 'hour'}</li>
               </ul>
             </div>
+            
+            <div className="rounded-xl p-4" style={{background: darkMode ? '#1e293b' : '#e8f5e9', borderLeft: `4px solid #22c55e`}}>
+              <strong>📖 {t.gebruiksaanwijzing}</strong>
+              <ul className="mt-2 space-y-1 text-sm" style={{color: textMuted}}>
+                <li>➕ <strong>{t.rit} {lang === 'nl' ? 'toevoegen' : 'add'}:</strong> {t.hulpRitToevoegen}</li>
+                <li>✏️ <strong>{t.rit} {lang === 'nl' ? 'bewerken' : 'edit'}:</strong> {t.hulpRitBewerken}</li>
+                <li>🗑️ <strong>{t.rit} {lang === 'nl' ? 'verwijderen' : 'delete'}:</strong> {t.hulpRitVerwijderen}</li>
+                <li>📄 <strong>{lang === 'nl' ? 'Factuur maken' : 'Create invoice'}:</strong> {t.hulpFactuur}</li>
+                <li>💾 <strong>Backup:</strong> {t.hulpBackup}</li>
+                <li>📅 <strong>{t.kalender}:</strong> {t.hulpKalender}</li>
+              </ul>
+            </div>
           </div>
         )}
       </div>
       
       <div className="text-center py-6 text-sm flex items-center justify-center gap-2" style={{color: textMuted}}>
         <CaddyIcon size={20} color={textMuted} /> 
-        <span>RitLog v2.8 • Jekel Dienstverlening</span>
+        <span>RitLog v2.9 • Jekel Dienstverlening</span>
       </div>
     </div>
   );
