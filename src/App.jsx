@@ -195,7 +195,7 @@ export default function RitLogApp() {
     await saveData(newRitten, newLog);
     
     setNieuwRit({ datum: nieuwRit.datum, ritNummer: parseInt(nieuwRit.ritNummer) + 1, route: '', kilometers: '', totaalBedrag: '', isUurloon: false, uren: '' });
-    setView('overzicht');
+    setView('log');
   };
 
   const handleDeleteRit = async (id) => {
@@ -286,7 +286,7 @@ export default function RitLogApp() {
   };
 
   const exportBackupJSON = () => {
-    const data = JSON.stringify({ ritten, logboek, exportDatum: new Date().toISOString(), versie: '2.2' }, null, 2);
+    const data = JSON.stringify({ ritten, logboek, exportDatum: new Date().toISOString(), versie: '2.5' }, null, 2);
     const blob = new Blob([data], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -357,13 +357,12 @@ export default function RitLogApp() {
         </div>
       </div>
 
-      {/* Nav */}
+      {/* Nav - 3 tabs */}
       <div className="bg-white shadow">
         <div className="flex max-w-lg mx-auto">
           {[
             {id: 'invoer', icon: '➕', label: 'Rit'},
-            {id: 'overzicht', icon: '📋', label: 'Overzicht'},
-            {id: 'log', icon: '📝', label: 'Log'},
+            {id: 'log', icon: '📋', label: 'Log'},
             {id: 'backup', icon: '💾', label: 'Backup'}
           ].map(tab => (
             <button key={tab.id} onClick={() => setView(tab.id)} 
@@ -399,45 +398,68 @@ export default function RitLogApp() {
           </div>
         </div>
 
-        {/* OVERZICHT */}
-        {view === 'overzicht' && (
-          <div className="bg-white rounded-xl shadow overflow-hidden">
-            <div className="p-4 flex justify-between items-center border-b-2" style={{borderColor: primaryColor}}>
-              <span className="font-bold text-lg" style={{color: primaryColor}}>Ritten</span>
-              <button onClick={exportCSV} disabled={!maandRitten.length} className="bg-purple-500 text-white px-4 py-2 rounded-lg disabled:bg-gray-300">📄 CSV</button>
-            </div>
-            {maandRitten.length === 0 ? (
-              <div className="p-8 text-center text-gray-400">
-                <CaddyIcon size={64} color="#ccc" />
-                <div className="mt-2 text-lg">Geen ritten deze maand</div>
-                <button onClick={() => setView('invoer')} className="mt-4 text-white px-6 py-3 rounded-lg text-lg" style={{background: primaryColor}}>+ Eerste rit</button>
+        {/* LOG - gecombineerd overzicht + activiteiten */}
+        {view === 'log' && (
+          <div className="space-y-4">
+            {/* Rittenlijst */}
+            <div className="bg-white rounded-xl shadow overflow-hidden">
+              <div className="p-4 flex justify-between items-center border-b-2" style={{borderColor: primaryColor}}>
+                <span className="font-bold text-lg" style={{color: primaryColor}}>Ritten</span>
+                <button onClick={exportCSV} disabled={!maandRitten.length} className="bg-purple-500 text-white px-4 py-2 rounded-lg disabled:bg-gray-300">📄 CSV</button>
               </div>
-            ) : (
-              <>
-                {maandRitten.map((r, i) => (
-                  <div key={r.id} className={`p-4 border-b flex items-start gap-3 ${i % 2 ? 'bg-gray-50' : ''}`}>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-medium text-lg">{r.dagNaam.slice(0,2)} {r.dagNummer}</span>
-                        <span className="text-sm text-gray-400">#{r.ritNummer}</span>
-                        {r.isUurloon && <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">uur</span>}
-                        {r.kmGeschat && <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded">±km</span>}
-                      </div>
-                      <div className="text-sm text-gray-600 truncate">{r.route}</div>
-                    </div>
-                    <div className="text-right whitespace-nowrap">
-                      <div className="font-bold text-lg">€{r.correctie?.toFixed(0)}</div>
-                      <div className="text-sm text-gray-400">{r.kilometers || '-'} km</div>
-                    </div>
-                    <button onClick={() => handleDeleteRit(r.id)} className="text-red-400 text-2xl leading-none ml-1">×</button>
-                  </div>
-                ))}
-                <div className="p-4 bg-gray-50 space-y-2">
-                  <div className="flex justify-between"><span>Excl. BTW:</span><span>€{totaalExclBTW.toFixed(0)}</span></div>
-                  <div className="flex justify-between text-gray-500"><span>BTW 21%:</span><span>€{btw.toFixed(0)}</span></div>
-                  <div className="flex justify-between font-bold text-lg pt-2 border-t" style={{color: primaryColor}}><span>Incl. BTW:</span><span>€{totaalInclBTW.toFixed(0)}</span></div>
+              {maandRitten.length === 0 ? (
+                <div className="p-8 text-center text-gray-400">
+                  <CaddyIcon size={64} color="#ccc" />
+                  <div className="mt-2 text-lg">Geen ritten deze maand</div>
+                  <button onClick={() => setView('invoer')} className="mt-4 text-white px-6 py-3 rounded-lg text-lg" style={{background: primaryColor}}>+ Eerste rit</button>
                 </div>
-              </>
+              ) : (
+                <>
+                  {maandRitten.map((r, i) => (
+                    <div key={r.id} className={`p-4 border-b flex items-start gap-3 ${i % 2 ? 'bg-gray-50' : ''}`}>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-medium text-lg">{r.dagNaam.slice(0,2)} {r.dagNummer}</span>
+                          <span className="text-sm text-gray-400">#{r.ritNummer}</span>
+                          {r.isUurloon && <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">uur</span>}
+                          {r.kmGeschat && <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded">±km</span>}
+                        </div>
+                        <div className="text-sm text-gray-600 truncate">{r.route}</div>
+                      </div>
+                      <div className="text-right whitespace-nowrap">
+                        <div className="font-bold text-lg">€{r.correctie?.toFixed(0)}</div>
+                        <div className="text-sm text-gray-400">{r.kilometers || '-'} km</div>
+                      </div>
+                      <button onClick={() => handleDeleteRit(r.id)} className="text-red-400 text-2xl leading-none ml-1">×</button>
+                    </div>
+                  ))}
+                  <div className="p-4 bg-gray-50 space-y-2">
+                    <div className="flex justify-between"><span>Excl. BTW:</span><span>€{totaalExclBTW.toFixed(0)}</span></div>
+                    <div className="flex justify-between text-gray-500"><span>BTW 21%:</span><span>€{btw.toFixed(0)}</span></div>
+                    <div className="flex justify-between font-bold text-lg pt-2 border-t" style={{color: primaryColor}}><span>Incl. BTW:</span><span>€{totaalInclBTW.toFixed(0)}</span></div>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Activiteiten logboek (ingeklapt) */}
+            {logboek.length > 0 && (
+              <details className="bg-white rounded-xl shadow overflow-hidden">
+                <summary className="p-4 cursor-pointer font-medium text-gray-600 hover:bg-gray-50">
+                  📝 Recente activiteit ({logboek.length})
+                </summary>
+                <div className="border-t max-h-48 overflow-y-auto">
+                  {[...logboek].reverse().slice(0, 10).map((entry, i) => (
+                    <div key={i} className={`p-3 border-b text-sm ${i % 2 ? 'bg-gray-50' : ''}`}>
+                      <div className="flex justify-between">
+                        <span className={`px-2 py-0.5 rounded text-xs ${entry.actie.includes('TOEGEVOEGD') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{entry.actie}</span>
+                        <span className="text-gray-400 text-xs">{new Date(entry.timestamp).toLocaleDateString('nl-NL')}</span>
+                      </div>
+                      <div className="text-gray-600 mt-1">{entry.details}</div>
+                    </div>
+                  ))}
+                </div>
+              </details>
             )}
           </div>
         )}
@@ -558,30 +580,6 @@ export default function RitLogApp() {
           </div>
         )}
 
-        {/* LOG */}
-        {view === 'log' && (
-          <div className="bg-white rounded-xl shadow overflow-hidden">
-            <div className="p-4 border-b-2 font-bold text-lg flex items-center gap-2" style={{borderColor: primaryColor, color: primaryColor}}>
-              <span>📝</span> Logboek
-            </div>
-            {logboek.length === 0 ? (
-              <div className="p-8 text-center text-gray-400 text-lg">Nog geen activiteit</div>
-            ) : (
-              <div className="max-h-96 overflow-y-auto">
-                {[...logboek].reverse().slice(0, 50).map((entry, i) => (
-                  <div key={i} className={`p-3 border-b ${i % 2 ? 'bg-gray-50' : ''}`}>
-                    <div className="flex justify-between">
-                      <span className={`text-sm px-2 py-1 rounded ${entry.actie.includes('TOEGEVOEGD') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{entry.actie}</span>
-                      <span className="text-sm text-gray-400">{new Date(entry.timestamp).toLocaleDateString('nl-NL')}</span>
-                    </div>
-                    <div className="text-gray-600 mt-1">{entry.details}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
         {/* BACKUP */}
         {view === 'backup' && (
           <div className="space-y-4">
@@ -623,7 +621,7 @@ export default function RitLogApp() {
       
       <div className="text-center py-6 text-sm text-gray-400 flex items-center justify-center gap-2">
         <CaddyIcon size={20} color="#9ca3af" /> 
-        <span>RitLog v2.4 • Jekel Dienstverlening</span>
+        <span>RitLog v2.5 • Jekel Dienstverlening</span>
       </div>
     </div>
   );
