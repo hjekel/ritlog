@@ -4,8 +4,8 @@ const MAANDEN = ['Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni', 'Juli',
 const DAGEN = ['Zondag', 'Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterdag'];
 
 // Tarieven (uit analyse declaraties)
-const TARIEF_PER_KM = 0.55;  // €0,55 per km
-const TARIEF_PER_UUR = 32;   // €32 per uur
+const TARIEF_PER_KM = 0.55;
+const TARIEF_PER_UUR = 32;
 
 // Afstanden vanaf Houten (enkele reis in km)
 const AFSTANDEN = {
@@ -90,33 +90,36 @@ export default function RitLogApp() {
 
   useEffect(() => { loadData(); }, []);
   
-  // Auto-berekeningen wanneer route/km verandert
+  // Auto-berekeningen wanneer route/km/uren verandert
   useEffect(() => {
-    if (nieuwRit.route && !nieuwRit.isUurloon) {
+    if (nieuwRit.isUurloon) {
+      const uren = parseFloat(nieuwRit.uren) || 0;
+      if (uren > 0) {
+        setGeschatBedrag(Math.round(uren * TARIEF_PER_UUR * 100) / 100);
+      } else {
+        setGeschatBedrag(null);
+      }
+      setGeschatteKm(null);
+    } else {
+      // Per km modus
       const kmSchatting = berekenKilometers(nieuwRit.route);
       setGeschatteKm(kmSchatting);
       
-      // Bereken geschat bedrag
       const km = nieuwRit.kilometers ? parseInt(nieuwRit.kilometers) : kmSchatting;
       if (km) {
         setGeschatBedrag(Math.round(km * TARIEF_PER_KM * 100) / 100);
       } else {
         setGeschatBedrag(null);
       }
-    } else if (nieuwRit.isUurloon && nieuwRit.uren) {
-      setGeschatBedrag(Math.round(parseFloat(nieuwRit.uren) * TARIEF_PER_UUR * 100) / 100);
-    } else {
-      setGeschatteKm(null);
-      setGeschatBedrag(null);
     }
   }, [nieuwRit.route, nieuwRit.kilometers, nieuwRit.isUurloon, nieuwRit.uren]);
 
   const loadData = async () => {
     setLoading(true);
     try {
-      const rittenResult = await window.storage.get('ritlog-data-v3');
-      if (rittenResult?.value) {
-        const data = JSON.parse(rittenResult.value);
+      const saved = localStorage.getItem('ritlog-data-v3');
+      if (saved) {
+        const data = JSON.parse(saved);
         setRitten(data.ritten || []);
         setLogboek(data.logboek || []);
       }
@@ -127,7 +130,7 @@ export default function RitLogApp() {
   const saveData = async (newRitten, newLogboek) => {
     setSaveStatus('💾');
     try {
-      await window.storage.set('ritlog-data-v3', JSON.stringify({ ritten: newRitten, logboek: newLogboek }));
+      localStorage.setItem('ritlog-data-v3', JSON.stringify({ ritten: newRitten, logboek: newLogboek }));
       setSaveStatus('✓');
       setTimeout(() => setSaveStatus(''), 2000);
     } catch (e) { setSaveStatus('⚠'); }
@@ -156,12 +159,12 @@ export default function RitLogApp() {
     
     if (nieuwRit.isUurloon) {
       const uren = parseFloat(nieuwRit.uren) || 0;
-      totaalBedrag = nieuwRit.totaalBedrag ? parseFloat(nieuwRit.totaalBedrag) : (uren * TARIEF_PER_UUR);
-      correctie = totaalBedrag; // Geen korting bij uurloon
+      totaalBedrag = nieuwRit.totaalBedrag ? parseFloat(nieuwRit.totaalBedrag) : geschatBedrag;
+      correctie = totaalBedrag;
       kilometers = null;
     } else {
       kilometers = nieuwRit.kilometers ? parseInt(nieuwRit.kilometers) : geschatteKm;
-      totaalBedrag = nieuwRit.totaalBedrag ? parseFloat(nieuwRit.totaalBedrag) : (kilometers ? kilometers * TARIEF_PER_KM : 0);
+      totaalBedrag = nieuwRit.totaalBedrag ? parseFloat(nieuwRit.totaalBedrag) : geschatBedrag;
       correctie = Math.round(totaalBedrag * 0.94 * 100) / 100;
     }
     
@@ -205,7 +208,6 @@ export default function RitLogApp() {
     await saveData(newRitten, newLog);
   };
 
-  // Verbeterde spraakherkenning
   const toggleListening = () => {
     if (isListening) {
       if (recognitionRef.current) {
@@ -227,6 +229,8 @@ export default function RitLogApp() {
         const text = e.results[0][0].transcript;
         setTranscript(text);
         parseSpraak(text);
+        setIsListening(false);
+        recognitionRef.current = null;
       };
       
       recognition.onend = () => {
@@ -270,7 +274,6 @@ export default function RitLogApp() {
     maandRitten.forEach(r => csv += `${r.dagNaam},${r.dagNummer},${r.ritNummer},"${r.route}",${r.kilometers || ''},€${r.correctie?.toFixed(0)}\n`);
     csv += `\n,,,Totaal excl. BTW:,,€${totaalExclBTW.toFixed(0)}\n,,,BTW 21%:,,€${btw.toFixed(0)}\n,,,Totaal incl. BTW:,,€${totaalInclBTW.toFixed(0)}\n`;
     
-    // Download
     const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -282,13 +285,30 @@ export default function RitLogApp() {
     URL.revokeObjectURL(url);
   };
 
-  const exportBackup = () => {
-    const data = JSON.stringify({ ritten, logboek, exportDatum: new Date().toISOString(), versie: '2.1' }, null, 2);
+  const exportBackupJSON = () => {
+    const data = JSON.stringify({ ritten, logboek, exportDatum: new Date().toISOString(), versie: '2.2' }, null, 2);
     const blob = new Blob([data], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = `RitLog_Backup_${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const exportBackupExcel = () => {
+    let csv = 'Dag,Datum,Rit,Route,KM,Bedrag,Correctie,Type,Uren\n';
+    ritten.forEach(r => {
+      csv += `${r.dagNaam},${r.datum},${r.ritNummer},"${r.route}",${r.kilometers || ''},${r.totaalBedrag?.toFixed(2)},${r.correctie?.toFixed(2)},${r.isUurloon ? 'Uur' : 'KM'},${r.uren || ''}\n`;
+    });
+    
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `RitLog_Export_${new Date().toISOString().split('T')[0]}.csv`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -325,13 +345,13 @@ export default function RitLogApp() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-100" style={{fontSize: '14px'}}>
+    <div className="min-h-screen bg-gray-100" style={{fontSize: '16px'}}>
       {/* Header */}
-      <div style={{background: primaryColor}} className="text-white p-3">
+      <div style={{background: primaryColor}} className="text-white p-4">
         <div className="flex justify-between items-center max-w-lg mx-auto">
           <div className="flex items-center gap-2">
-            <CaddyIcon size={28} color="white" />
-            <span className="font-bold text-lg">RitLog</span>
+            <CaddyIcon size={32} color="white" />
+            <span className="font-bold text-xl">RitLog</span>
           </div>
           {saveStatus && <span className="text-sm bg-white/20 px-2 py-1 rounded">{saveStatus}</span>}
         </div>
@@ -352,70 +372,70 @@ export default function RitLogApp() {
                 borderBottom: view === tab.id ? `3px solid ${primaryColor}` : '3px solid transparent',
                 color: view === tab.id ? primaryColor : '#888'
               }}>
-              <div className="text-lg">{tab.icon}</div>
-              <div className="text-xs">{tab.label}</div>
+              <div className="text-xl">{tab.icon}</div>
+              <div className="text-sm">{tab.label}</div>
             </button>
           ))}
         </div>
       </div>
 
-      <div className="p-3 max-w-lg mx-auto">
+      <div className="p-4 max-w-lg mx-auto">
         {/* Maand */}
-        <div className="bg-white rounded-xl shadow p-4 mb-3">
+        <div className="bg-white rounded-xl shadow p-4 mb-4">
           <div className="flex items-center justify-between mb-3">
             <button onClick={() => { if (huidigeMaand === 0) { setHuidigeMaand(11); setHuidigJaar(huidigJaar - 1); } else setHuidigeMaand(huidigeMaand - 1); }} 
-              className="w-10 h-10 rounded-full flex items-center justify-center" style={{background: `${primaryColor}20`, color: primaryColor}}>◀</button>
+              className="w-12 h-12 rounded-full flex items-center justify-center text-xl" style={{background: `${primaryColor}20`, color: primaryColor}}>◀</button>
             <div className="text-center">
-              <div className="font-bold text-lg" style={{color: primaryColor}}>{MAANDEN[huidigeMaand]}</div>
+              <div className="font-bold text-xl" style={{color: primaryColor}}>{MAANDEN[huidigeMaand]}</div>
               <div className="text-gray-500">{huidigJaar}</div>
             </div>
             <button onClick={() => { if (huidigeMaand === 11) { setHuidigeMaand(0); setHuidigJaar(huidigJaar + 1); } else setHuidigeMaand(huidigeMaand + 1); }} 
-              className="w-10 h-10 rounded-full flex items-center justify-center" style={{background: `${primaryColor}20`, color: primaryColor}}>▶</button>
+              className="w-12 h-12 rounded-full flex items-center justify-center text-xl" style={{background: `${primaryColor}20`, color: primaryColor}}>▶</button>
           </div>
-          <div className="flex justify-center gap-2 text-sm">
-            <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full">{maandRitten.length} ritten</span>
-            <span className="bg-gray-100 px-3 py-1 rounded-full">{totaalKM} km</span>
-            <span className="text-white px-3 py-1 rounded-full font-bold" style={{background: primaryColor}}>€{totaalInclBTW.toFixed(0)}</span>
+          <div className="flex justify-center gap-3 flex-wrap">
+            <span className="bg-blue-100 text-blue-800 px-4 py-2 rounded-full font-medium">{maandRitten.length} ritten</span>
+            <span className="bg-gray-100 px-4 py-2 rounded-full">{totaalKM} km</span>
+            <span className="text-white px-4 py-2 rounded-full font-bold" style={{background: primaryColor}}>€{totaalInclBTW.toFixed(0)}</span>
           </div>
         </div>
 
         {/* OVERZICHT */}
         {view === 'overzicht' && (
           <div className="bg-white rounded-xl shadow overflow-hidden">
-            <div className="p-3 flex justify-between items-center border-b-2" style={{borderColor: primaryColor}}>
-              <span className="font-bold" style={{color: primaryColor}}>Ritten</span>
-              <button onClick={exportCSV} disabled={!maandRitten.length} className="bg-green-500 text-white px-3 py-1 rounded text-sm disabled:bg-gray-300">📥 CSV</button>
+            <div className="p-4 flex justify-between items-center border-b-2" style={{borderColor: primaryColor}}>
+              <span className="font-bold text-lg" style={{color: primaryColor}}>Ritten</span>
+              <button onClick={exportCSV} disabled={!maandRitten.length} className="bg-purple-500 text-white px-4 py-2 rounded-lg disabled:bg-gray-300">📄 CSV</button>
             </div>
             {maandRitten.length === 0 ? (
               <div className="p-8 text-center text-gray-400">
-                <CaddyIcon size={48} color="#ccc" />
-                <div className="mt-2">Geen ritten</div>
-                <button onClick={() => setView('invoer')} className="mt-3 text-white px-4 py-2 rounded" style={{background: primaryColor}}>+ Eerste rit</button>
+                <CaddyIcon size={64} color="#ccc" />
+                <div className="mt-2 text-lg">Geen ritten deze maand</div>
+                <button onClick={() => setView('invoer')} className="mt-4 text-white px-6 py-3 rounded-lg text-lg" style={{background: primaryColor}}>+ Eerste rit</button>
               </div>
             ) : (
               <>
                 {maandRitten.map((r, i) => (
-                  <div key={r.id} className={`p-3 border-b flex items-start gap-2 ${i % 2 ? 'bg-gray-50' : ''}`}>
+                  <div key={r.id} className={`p-4 border-b flex items-start gap-3 ${i % 2 ? 'bg-gray-50' : ''}`}>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-medium">{r.dagNaam.slice(0,2)} {r.dagNummer}</span>
-                        <span className="text-xs text-gray-400">#{r.ritNummer}</span>
-                        {r.isUurloon && <span className="text-xs bg-blue-100 text-blue-700 px-1 rounded">uur</span>}
-                        {r.kmGeschat && <span className="text-xs bg-yellow-100 text-yellow-700 px-1 rounded">±</span>}
+                        <span className="font-medium text-lg">{r.dagNaam.slice(0,2)} {r.dagNummer}</span>
+                        <span className="text-sm text-gray-400">#{r.ritNummer}</span>
+                        {r.isUurloon && <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">uur</span>}
+                        {r.kmGeschat && <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded">±km</span>}
                       </div>
-                      <div className="text-xs text-gray-600 truncate">{r.route}</div>
+                      <div className="text-sm text-gray-600 truncate">{r.route}</div>
                     </div>
                     <div className="text-right whitespace-nowrap">
-                      <div className="font-bold">€{r.correctie?.toFixed(0)}</div>
-                      <div className="text-xs text-gray-400">{r.kilometers || '-'} km</div>
+                      <div className="font-bold text-lg">€{r.correctie?.toFixed(0)}</div>
+                      <div className="text-sm text-gray-400">{r.kilometers || '-'} km</div>
                     </div>
-                    <button onClick={() => handleDeleteRit(r.id)} className="text-red-400 text-xl leading-none">×</button>
+                    <button onClick={() => handleDeleteRit(r.id)} className="text-red-400 text-2xl leading-none ml-1">×</button>
                   </div>
                 ))}
-                <div className="p-3 bg-gray-50 text-sm space-y-1">
+                <div className="p-4 bg-gray-50 space-y-2">
                   <div className="flex justify-between"><span>Excl. BTW:</span><span>€{totaalExclBTW.toFixed(0)}</span></div>
                   <div className="flex justify-between text-gray-500"><span>BTW 21%:</span><span>€{btw.toFixed(0)}</span></div>
-                  <div className="flex justify-between font-bold pt-1 border-t" style={{color: primaryColor}}><span>Incl. BTW:</span><span>€{totaalInclBTW.toFixed(0)}</span></div>
+                  <div className="flex justify-between font-bold text-lg pt-2 border-t" style={{color: primaryColor}}><span>Incl. BTW:</span><span>€{totaalInclBTW.toFixed(0)}</span></div>
                 </div>
               </>
             )}
@@ -425,78 +445,126 @@ export default function RitLogApp() {
         {/* INVOER */}
         {view === 'invoer' && (
           <div className="bg-white rounded-xl shadow p-4">
-            <div className="font-bold mb-4" style={{color: primaryColor}}>Nieuwe Rit</div>
+            <div className="font-bold text-lg mb-4 flex items-center gap-2" style={{color: primaryColor}}>
+              <CaddyIcon size={28} color={primaryColor} />
+              <span>Nieuwe Rit</span>
+            </div>
             
+            {/* Inspreken knop */}
             <button onClick={toggleListening}
-              className={`w-full py-3 rounded-lg font-medium text-white mb-3 ${isListening ? 'bg-red-500' : 'bg-blue-500'}`}>
-              {isListening ? '⏹ Stop opname' : '🎤 Inspreken'}
+              className={`w-full py-4 rounded-lg font-medium text-white text-lg mb-2 flex items-center justify-center gap-2 ${isListening ? 'bg-red-500 animate-pulse' : 'bg-blue-500'}`}>
+              {isListening ? '⏹ Stop opname...' : '🎤 Inspreken'}
             </button>
-            {transcript && <div className="mb-3 p-2 bg-blue-50 rounded text-sm text-blue-800">"{transcript}"</div>}
             
+            {/* Voorbeeld tekst */}
+            <div className="text-sm text-gray-500 text-center mb-4 px-2 py-2 bg-gray-50 rounded-lg">
+              {transcript ? (
+                <span className="text-blue-600 font-medium">"{transcript}"</span>
+              ) : (
+                <>
+                  <div className="font-medium text-gray-700 mb-1">💡 Voorbeelden:</div>
+                  <div>"Amsterdam 120 km 66 euro"</div>
+                  <div>"Utrecht Ede 2 uur 64 euro"</div>
+                  <div className="mt-1 text-xs text-gray-400">Houten-...-Houten wordt automatisch toegevoegd</div>
+                </>
+              )}
+            </div>
+            
+            {/* Per km / Per uur toggle */}
             <div className="flex gap-2 mb-4">
               <button onClick={() => setNieuwRit({...nieuwRit, isUurloon: false})}
-                className={`flex-1 py-2 rounded-lg text-sm font-medium ${!nieuwRit.isUurloon ? 'text-white' : 'bg-gray-100'}`}
+                className={`flex-1 py-3 rounded-lg font-medium ${!nieuwRit.isUurloon ? 'text-white' : 'bg-gray-100'}`}
                 style={{background: !nieuwRit.isUurloon ? primaryColor : undefined}}>
                 Per km (€{TARIEF_PER_KM}/km)
               </button>
               <button onClick={() => setNieuwRit({...nieuwRit, isUurloon: true})}
-                className={`flex-1 py-2 rounded-lg text-sm font-medium ${nieuwRit.isUurloon ? 'text-white' : 'bg-gray-100'}`}
+                className={`flex-1 py-3 rounded-lg font-medium ${nieuwRit.isUurloon ? 'text-white' : 'bg-gray-100'}`}
                 style={{background: nieuwRit.isUurloon ? primaryColor : undefined}}>
                 Per uur (€{TARIEF_PER_UUR}/u)
               </button>
             </div>
             
-            <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-4">
+              {/* Datum en Rit # */}
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs text-gray-500">Datum</label>
-                  <input type="date" value={nieuwRit.datum} onChange={e => setNieuwRit({...nieuwRit, datum: e.target.value})} className="w-full border rounded-lg p-2" />
+                  <label className="text-sm text-gray-500 block mb-1">Datum</label>
+                  <input type="date" value={nieuwRit.datum} onChange={e => setNieuwRit({...nieuwRit, datum: e.target.value})} className="w-full border rounded-lg p-3 text-lg" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500">Rit #</label>
-                  <input type="number" min="1" value={nieuwRit.ritNummer} onChange={e => setNieuwRit({...nieuwRit, ritNummer: e.target.value})} className="w-full border rounded-lg p-2" />
+                  <label className="text-sm text-gray-500 block mb-1">Rit #</label>
+                  <input type="number" min="1" value={nieuwRit.ritNummer} onChange={e => setNieuwRit({...nieuwRit, ritNummer: e.target.value})} className="w-full border rounded-lg p-3 text-lg" />
                 </div>
               </div>
               
+              {/* Route */}
               <div>
-                <label className="text-xs text-gray-500">Route</label>
-                <input type="text" value={nieuwRit.route} onChange={e => setNieuwRit({...nieuwRit, route: e.target.value})} placeholder="Amsterdam - Utrecht - Ede" className="w-full border rounded-lg p-2" />
+                <label className="text-sm text-gray-500 block mb-1">Route (zonder Houten)</label>
+                <input type="text" value={nieuwRit.route} onChange={e => setNieuwRit({...nieuwRit, route: e.target.value})} placeholder="bijv: Amsterdam - Utrecht - Ede" className="w-full border rounded-lg p-3 text-lg" />
               </div>
               
+              {/* KM en Bedrag OF Uren en Bedrag */}
               {!nieuwRit.isUurloon ? (
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs text-gray-500">KM {geschatteKm && !nieuwRit.kilometers && <span className="text-yellow-600">(±{geschatteKm})</span>}</label>
-                    <input type="number" value={nieuwRit.kilometers} onChange={e => setNieuwRit({...nieuwRit, kilometers: e.target.value})} placeholder={geschatteKm ? `≈${geschatteKm}` : ''} className="w-full border rounded-lg p-2" />
+                    <label className="text-sm text-gray-500 block mb-1">
+                      KM {geschatteKm && !nieuwRit.kilometers && <span className="text-green-600 font-medium">(≈{geschatteKm})</span>}
+                    </label>
+                    <input 
+                      type="number" 
+                      value={nieuwRit.kilometers} 
+                      onChange={e => setNieuwRit({...nieuwRit, kilometers: e.target.value})} 
+                      placeholder={geschatteKm ? `${geschatteKm}` : 'km'} 
+                      className={`w-full border rounded-lg p-3 text-lg ${!nieuwRit.kilometers && geschatteKm ? 'bg-green-50 border-green-300 placeholder-green-600' : ''}`} 
+                    />
                   </div>
                   <div>
-                    <label className="text-xs text-gray-500">Bedrag € {geschatBedrag && !nieuwRit.totaalBedrag && <span className="text-yellow-600">(±{geschatBedrag})</span>}</label>
-                    <input type="number" step="0.01" value={nieuwRit.totaalBedrag} onChange={e => setNieuwRit({...nieuwRit, totaalBedrag: e.target.value})} placeholder={geschatBedrag ? `≈${geschatBedrag}` : ''} className="w-full border rounded-lg p-2" />
+                    <label className="text-sm text-gray-500 block mb-1">
+                      Bedrag € {geschatBedrag && !nieuwRit.totaalBedrag && <span className="text-green-600 font-medium">(≈{geschatBedrag})</span>}
+                    </label>
+                    <input 
+                      type="number" 
+                      step="0.01" 
+                      value={nieuwRit.totaalBedrag} 
+                      onChange={e => setNieuwRit({...nieuwRit, totaalBedrag: e.target.value})} 
+                      placeholder={geschatBedrag ? `${geschatBedrag}` : '€'} 
+                      className={`w-full border rounded-lg p-3 text-lg ${!nieuwRit.totaalBedrag && geschatBedrag ? 'bg-green-50 border-green-300 placeholder-green-600' : ''}`} 
+                    />
                   </div>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs text-gray-500">Uren</label>
-                    <input type="number" step="0.25" value={nieuwRit.uren} onChange={e => setNieuwRit({...nieuwRit, uren: e.target.value})} placeholder="2.5" className="w-full border rounded-lg p-2" />
+                    <label className="text-sm text-gray-500 block mb-1">Uren</label>
+                    <input type="number" step="0.25" value={nieuwRit.uren} onChange={e => setNieuwRit({...nieuwRit, uren: e.target.value})} placeholder="bijv: 2.5" className="w-full border rounded-lg p-3 text-lg" />
                   </div>
                   <div>
-                    <label className="text-xs text-gray-500">Bedrag € {geschatBedrag && !nieuwRit.totaalBedrag && <span className="text-blue-600">(={geschatBedrag})</span>}</label>
-                    <input type="number" step="0.01" value={nieuwRit.totaalBedrag} onChange={e => setNieuwRit({...nieuwRit, totaalBedrag: e.target.value})} placeholder={geschatBedrag ? `${geschatBedrag}` : ''} className="w-full border rounded-lg p-2" />
+                    <label className="text-sm text-gray-500 block mb-1">
+                      Bedrag € {geschatBedrag && !nieuwRit.totaalBedrag && <span className="text-blue-600 font-medium">(={geschatBedrag})</span>}
+                    </label>
+                    <input 
+                      type="number" 
+                      step="0.01" 
+                      value={nieuwRit.totaalBedrag} 
+                      onChange={e => setNieuwRit({...nieuwRit, totaalBedrag: e.target.value})} 
+                      placeholder={geschatBedrag ? `${geschatBedrag}` : '€'} 
+                      className={`w-full border rounded-lg p-3 text-lg ${!nieuwRit.totaalBedrag && geschatBedrag ? 'bg-blue-50 border-blue-300 placeholder-blue-600' : ''}`} 
+                    />
                   </div>
                 </div>
               )}
               
-              {(nieuwRit.totaalBedrag || geschatBedrag) && (
-                <div className={`text-center py-2 rounded-lg text-sm ${nieuwRit.isUurloon ? 'bg-blue-50 text-blue-700' : 'bg-green-50 text-green-700'}`}>
+              {/* Preview berekening */}
+              {(geschatBedrag || nieuwRit.totaalBedrag) && (
+                <div className={`text-center py-3 rounded-lg font-medium ${nieuwRit.isUurloon ? 'bg-blue-50 text-blue-700' : 'bg-green-50 text-green-700'}`}>
                   {nieuwRit.isUurloon 
-                    ? `Uurloon: €${(parseFloat(nieuwRit.totaalBedrag) || geschatBedrag || 0).toFixed(0)}` 
-                    : `Na 6% correctie: €${((parseFloat(nieuwRit.totaalBedrag) || geschatBedrag || 0) * 0.94).toFixed(0)}`
+                    ? `💰 Uurloon: €${(parseFloat(nieuwRit.totaalBedrag) || geschatBedrag || 0).toFixed(0)} (geen korting)` 
+                    : `💰 Na 6% correctie: €${((parseFloat(nieuwRit.totaalBedrag) || geschatBedrag || 0) * 0.94).toFixed(0)}`
                   }
                 </div>
               )}
               
-              <button onClick={handleAddRit} className="w-full py-3 rounded-lg font-bold text-white" style={{background: primaryColor}}>✓ Toevoegen</button>
+              <button onClick={handleAddRit} className="w-full py-4 rounded-lg font-bold text-white text-lg" style={{background: primaryColor}}>✓ Toevoegen</button>
             </div>
           </div>
         )}
@@ -504,16 +572,18 @@ export default function RitLogApp() {
         {/* LOG */}
         {view === 'log' && (
           <div className="bg-white rounded-xl shadow overflow-hidden">
-            <div className="p-3 border-b-2 font-bold" style={{borderColor: primaryColor, color: primaryColor}}>Logboek</div>
+            <div className="p-4 border-b-2 font-bold text-lg flex items-center gap-2" style={{borderColor: primaryColor, color: primaryColor}}>
+              <span>📝</span> Logboek
+            </div>
             {logboek.length === 0 ? (
-              <div className="p-8 text-center text-gray-400">Nog geen activiteit</div>
+              <div className="p-8 text-center text-gray-400 text-lg">Nog geen activiteit</div>
             ) : (
-              <div className="max-h-80 overflow-y-auto">
+              <div className="max-h-96 overflow-y-auto">
                 {[...logboek].reverse().slice(0, 50).map((entry, i) => (
-                  <div key={i} className={`p-2 border-b text-sm ${i % 2 ? 'bg-gray-50' : ''}`}>
+                  <div key={i} className={`p-3 border-b ${i % 2 ? 'bg-gray-50' : ''}`}>
                     <div className="flex justify-between">
-                      <span className={`text-xs px-2 rounded ${entry.actie.includes('TOEGEVOEGD') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{entry.actie}</span>
-                      <span className="text-xs text-gray-400">{new Date(entry.timestamp).toLocaleDateString('nl-NL')}</span>
+                      <span className={`text-sm px-2 py-1 rounded ${entry.actie.includes('TOEGEVOEGD') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{entry.actie}</span>
+                      <span className="text-sm text-gray-400">{new Date(entry.timestamp).toLocaleDateString('nl-NL')}</span>
                     </div>
                     <div className="text-gray-600 mt-1">{entry.details}</div>
                   </div>
@@ -525,29 +595,46 @@ export default function RitLogApp() {
 
         {/* BACKUP */}
         {view === 'backup' && (
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div className="bg-white rounded-xl shadow p-4">
-              <div className="font-bold mb-3" style={{color: primaryColor}}>💾 Backup downloaden</div>
-              <button onClick={exportBackup} className="w-full py-3 rounded-lg text-white font-medium bg-blue-500">
-                Download ({ritten.length} ritten)
-              </button>
+              <div className="font-bold text-lg mb-4 flex items-center gap-2" style={{color: primaryColor}}>
+                <span>💾</span> Backup downloaden
+              </div>
+              <div className="space-y-3">
+                <button onClick={exportBackupExcel} className="w-full py-4 rounded-lg text-white font-medium text-lg bg-green-500 flex items-center justify-center gap-2">
+                  📊 Excel/CSV ({ritten.length} ritten)
+                </button>
+                <button onClick={exportBackupJSON} className="w-full py-3 rounded-lg border border-gray-300 text-gray-600">
+                  📁 JSON (voor herstel)
+                </button>
+              </div>
             </div>
+            
             <div className="bg-white rounded-xl shadow p-4">
-              <div className="font-bold mb-3" style={{color: primaryColor}}>🔄 Backup herstellen</div>
-              <label className="block w-full py-3 rounded-lg border-2 border-dashed border-gray-300 text-center cursor-pointer hover:border-blue-500">
-                <span className="text-gray-600">Kies bestand...</span>
+              <div className="font-bold text-lg mb-4 flex items-center gap-2" style={{color: primaryColor}}>
+                <span>🔄</span> Backup herstellen
+              </div>
+              <label className="block w-full py-4 rounded-lg border-2 border-dashed border-gray-300 text-center cursor-pointer hover:border-blue-500">
+                <span className="text-gray-600">Kies JSON bestand...</span>
                 <input type="file" accept=".json" onChange={importBackup} className="hidden" />
               </label>
             </div>
-            <div className="bg-orange-50 rounded-xl p-4 text-sm" style={{borderLeft: `4px solid ${primaryColor}`}}>
-              <strong>💡 Tip:</strong> Tarieven: €{TARIEF_PER_KM}/km of €{TARIEF_PER_UUR}/uur
+            
+            <div className="bg-orange-50 rounded-xl p-4" style={{borderLeft: `4px solid ${primaryColor}`}}>
+              <strong>💡 Tips:</strong>
+              <ul className="mt-2 space-y-1 text-gray-600">
+                <li>• <strong>Excel/CSV:</strong> open in Excel of Google Sheets</li>
+                <li>• <strong>JSON:</strong> alleen voor herstel in de app</li>
+                <li>• Tarieven: €{TARIEF_PER_KM}/km of €{TARIEF_PER_UUR}/uur</li>
+              </ul>
             </div>
           </div>
         )}
       </div>
       
-      <div className="text-center py-4 text-xs text-gray-400">
-        RitLog v2.1 • Jekel Dienstverlening
+      <div className="text-center py-6 text-sm text-gray-400 flex items-center justify-center gap-2">
+        <CaddyIcon size={20} color="#9ca3af" /> 
+        <span>RitLog v2.2 • Jekel Dienstverlening</span>
       </div>
     </div>
   );
