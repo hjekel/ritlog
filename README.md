@@ -1,6 +1,6 @@
 # RitLog - Ritten Registratie App
 
-Een web-app voor het bijhouden van ritten en declaraties voor Jekel Dienstverlening.
+Een web-app voor het bijhouden van ritten en declaraties.
 
 ## Features
 
