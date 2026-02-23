@@ -68,7 +68,7 @@ export default function RitLogApp() {
   const [logboek, setLogboek] = useState([]);
   const [huidigeMaand, setHuidigeMaand] = useState(new Date().getMonth());
   const [huidigJaar, setHuidigJaar] = useState(new Date().getFullYear());
-  const [view, setView] = useState('overzicht');
+  const [view, setView] = useState('invoer');
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [loading, setLoading] = useState(true);
@@ -350,7 +350,7 @@ export default function RitLogApp() {
       <div style={{background: primaryColor, paddingTop: 'env(safe-area-inset-top, 0px)'}} className="text-white p-4">
         <div className="flex justify-between items-center max-w-lg mx-auto">
           <div className="flex items-center gap-2">
-            <CaddyIcon size={32} color="white" />
+            <span className="text-2xl">🚐</span>
             <span className="font-bold text-xl">RitLog</span>
           </div>
           {saveStatus && <span className="text-sm bg-white/20 px-2 py-1 rounded">{saveStatus}</span>}
@@ -361,8 +361,8 @@ export default function RitLogApp() {
       <div className="bg-white shadow">
         <div className="flex max-w-lg mx-auto">
           {[
-            {id: 'overzicht', icon: '📋', label: 'Overzicht'},
             {id: 'invoer', icon: '➕', label: 'Rit'},
+            {id: 'overzicht', icon: '📋', label: 'Overzicht'},
             {id: 'log', icon: '📝', label: 'Log'},
             {id: 'backup', icon: '💾', label: 'Backup'}
           ].map(tab => (
@@ -623,7 +623,7 @@ export default function RitLogApp() {
       
       <div className="text-center py-6 text-sm text-gray-400 flex items-center justify-center gap-2">
         <CaddyIcon size={20} color="#9ca3af" /> 
-        <span>RitLog v2.3 • Jekel Dienstverlening</span>
+        <span>RitLog v2.4 • Jekel Dienstverlening</span>
       </div>
     </div>
   );
