@@ -142,9 +142,9 @@ const TRANSLATIONS = {
   }
 };
 
-// Tarieven (uit analyse declaraties)
-const TARIEF_PER_KM = 0.55;
-const TARIEF_PER_UUR = 32;
+// Tarieven (Leander's tarieven)
+const TARIEF_PER_KM = 0.49;
+const TARIEF_PER_UUR = 31;
 
 // Afstanden vanaf Houten (enkele reis in km)
 const AFSTANDEN = {
@@ -807,7 +807,7 @@ export default function RitLogApp() {
           </tr>
         </table>
         <div class="footer">
-          Gegenereerd door RitLog v3.2 • ${new Date().toLocaleDateString('nl-NL')}
+          Gegenereerd door RitLog v3.3 • ${new Date().toLocaleDateString('nl-NL')}
         </div>
       </body>
       </html>
@@ -822,7 +822,7 @@ export default function RitLogApp() {
   };
 
   const exportBackupJSON = () => {
-    const data = JSON.stringify({ ritten, logboek, exportDatum: new Date().toISOString(), versie: '3.2' }, null, 2);
+    const data = JSON.stringify({ ritten, logboek, exportDatum: new Date().toISOString(), versie: '3.3' }, null, 2);
     const blob = new Blob([data], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -1303,7 +1303,7 @@ export default function RitLogApp() {
       
       <div className="text-center py-6 text-sm flex items-center justify-center gap-2" style={{color: textMuted}}>
         <CaddyIcon size={20} color={textMuted} /> 
-        <span>RitLog v3.2 • Jekel Dienstverlening</span>
+        <span>RitLog v3.3 • Jekel Dienstverlening</span>
       </div>
     </div>
   );
