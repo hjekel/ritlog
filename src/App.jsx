@@ -69,7 +69,17 @@ const TRANSLATIONS = {
     hulpRitVerwijderen: 'In bewerk-scherm onderaan',
     hulpFactuur: 'Log → CSV of PDF knop aan einde van de maand',
     hulpBackup: 'Regelmatig JSON downloaden voor herstel',
-    hulpKalender: 'Groen = gewerkt, Rood = niet gewerkt'
+    hulpKalender: 'Groen = gewerkt, Rood = niet gewerkt',
+    onkosten: 'Onkosten',
+    nieuweOnkost: 'Nieuwe onkost',
+    brandstof: 'Brandstof',
+    parkeren: 'Parkeren',
+    tol: 'Tol/Vignetten',
+    overig: 'Overig',
+    omschrijving: 'Omschrijving',
+    geenOnkosten: 'Geen onkosten deze maand',
+    totaalOnkosten: 'Totaal onkosten:',
+    hulpOnkosten: 'Houd brandstof, parkeren en andere kosten bij'
   },
   en: {
     maanden: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
@@ -138,7 +148,17 @@ const TRANSLATIONS = {
     hulpRitVerwijderen: 'At the bottom of edit screen',
     hulpFactuur: 'Log → CSV or PDF button at end of month',
     hulpBackup: 'Download JSON regularly for backup',
-    hulpKalender: 'Green = worked, Red = not worked'
+    hulpKalender: 'Green = worked, Red = not worked',
+    onkosten: 'Expenses',
+    nieuweOnkost: 'New expense',
+    brandstof: 'Fuel',
+    parkeren: 'Parking',
+    tol: 'Toll/Vignettes',
+    overig: 'Other',
+    omschrijving: 'Description',
+    geenOnkosten: 'No expenses this month',
+    totaalOnkosten: 'Total expenses:',
+    hulpOnkosten: 'Track fuel, parking and other costs'
   }
 };
 
@@ -480,6 +500,7 @@ const EditModal = ({ rit, onSave, onCancel, onDelete, t, darkMode, primaryColor,
 export default function RitLogApp() {
   const [ritten, setRitten] = useState([]);
   const [logboek, setLogboek] = useState([]);
+  const [onkosten, setOnkosten] = useState([]);
   const [huidigeMaand, setHuidigeMaand] = useState(new Date().getMonth());
   const [huidigJaar, setHuidigJaar] = useState(new Date().getFullYear());
   const [view, setView] = useState('invoer');
@@ -488,6 +509,14 @@ export default function RitLogApp() {
   const [loading, setLoading] = useState(true);
   const [saveStatus, setSaveStatus] = useState('');
   const [editingRit, setEditingRit] = useState(null);
+  
+  // Onkosten form state
+  const [nieuweOnkost, setNieuweOnkost] = useState({
+    datum: new Date().toISOString().split('T')[0],
+    type: 'brandstof',
+    bedrag: '',
+    omschrijving: ''
+  });
   
   // Taal en thema
   const [lang, setLang] = useState(() => localStorage.getItem('ritlog-lang') || 'nl');
@@ -543,20 +572,30 @@ export default function RitLogApp() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const saved = localStorage.getItem('ritlog-data-v3');
+      const saved = localStorage.getItem('ritlog-data-v4');
       if (saved) {
         const data = JSON.parse(saved);
         setRitten(data.ritten || []);
         setLogboek(data.logboek || []);
+        setOnkosten(data.onkosten || []);
+      } else {
+        // Probeer oude v3 data te laden
+        const oldSaved = localStorage.getItem('ritlog-data-v3');
+        if (oldSaved) {
+          const data = JSON.parse(oldSaved);
+          setRitten(data.ritten || []);
+          setLogboek(data.logboek || []);
+          setOnkosten([]);
+        }
       }
     } catch (e) { console.log('Start nieuw'); }
     setLoading(false);
   };
 
-  const saveData = async (newRitten, newLogboek) => {
+  const saveData = async (newRitten, newLogboek, newOnkosten = onkosten) => {
     setSaveStatus('💾');
     try {
-      localStorage.setItem('ritlog-data-v3', JSON.stringify({ ritten: newRitten, logboek: newLogboek }));
+      localStorage.setItem('ritlog-data-v4', JSON.stringify({ ritten: newRitten, logboek: newLogboek, onkosten: newOnkosten }));
       setSaveStatus('✓');
       setTimeout(() => setSaveStatus(''), 2000);
     } catch (e) { setSaveStatus('⚠'); }
@@ -703,6 +742,38 @@ export default function RitLogApp() {
     setEditingRit(null);
   };
 
+  // Onkosten functies
+  const handleAddOnkost = async () => {
+    if (!nieuweOnkost.bedrag) { alert(lang === 'nl' ? 'Vul een bedrag in' : 'Enter an amount'); return; }
+    
+    const datum = new Date(nieuweOnkost.datum);
+    const onkost = {
+      id: Date.now(),
+      datum: nieuweOnkost.datum,
+      maand: datum.getMonth(),
+      jaar: datum.getFullYear(),
+      type: nieuweOnkost.type,
+      bedrag: parseFloat(nieuweOnkost.bedrag),
+      omschrijving: nieuweOnkost.omschrijving || ''
+    };
+    
+    const newOnkosten = [...onkosten, onkost].sort((a, b) => a.datum.localeCompare(b.datum));
+    setOnkosten(newOnkosten);
+    await saveData(ritten, logboek, newOnkosten);
+    
+    setNieuweOnkost({ datum: nieuweOnkost.datum, type: 'brandstof', bedrag: '', omschrijving: '' });
+  };
+
+  const handleDeleteOnkost = async (id) => {
+    if (!confirm(t.bevestigVerwijderen)) return;
+    const newOnkosten = onkosten.filter(o => o.id !== id);
+    setOnkosten(newOnkosten);
+    await saveData(ritten, logboek, newOnkosten);
+  };
+
+  const maandOnkosten = onkosten.filter(o => o.maand === huidigeMaand && o.jaar === huidigJaar);
+  const totaalOnkosten = maandOnkosten.reduce((s, o) => s + o.bedrag, 0);
+
   const parseSpraak = (text) => {
     let route = text, km = '', bedrag = '', uren = '';
     const kmMatch = text.match(/(\d+)\s*(kilometer|km)/i);
@@ -807,7 +878,7 @@ export default function RitLogApp() {
           </tr>
         </table>
         <div class="footer">
-          Gegenereerd door RitLog v3.3 • ${new Date().toLocaleDateString('nl-NL')}
+          Gegenereerd door RitLog v3.4 • ${new Date().toLocaleDateString('nl-NL')}
         </div>
       </body>
       </html>
@@ -822,7 +893,7 @@ export default function RitLogApp() {
   };
 
   const exportBackupJSON = () => {
-    const data = JSON.stringify({ ritten, logboek, exportDatum: new Date().toISOString(), versie: '3.3' }, null, 2);
+    const data = JSON.stringify({ ritten, logboek, exportDatum: new Date().toISOString(), versie: '3.4' }, null, 2);
     const blob = new Blob([data], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -951,6 +1022,7 @@ export default function RitLogApp() {
           {[
             {id: 'invoer', icon: '➕', label: t.rit},
             {id: 'log', icon: '📋', label: t.log},
+            {id: 'onkosten', icon: '💸', label: t.onkosten},
             {id: 'backup', icon: '💾', label: t.backup}
           ].map(tab => (
             <button key={tab.id} onClick={() => setView(tab.id)} 
@@ -960,7 +1032,7 @@ export default function RitLogApp() {
                 color: view === tab.id ? primaryColor : textMuted
               }}>
               <div className="text-xl">{tab.icon}</div>
-              <div className="text-sm">{tab.label}</div>
+              <div className="text-xs">{tab.label}</div>
             </button>
           ))}
         </div>
@@ -1249,6 +1321,123 @@ export default function RitLogApp() {
           </div>
         )}
 
+        {/* ONKOSTEN */}
+        {view === 'onkosten' && (
+          <div className="space-y-4">
+            {/* Onkosten invoer */}
+            <div className="rounded-xl shadow p-4" style={{background: cardBg}}>
+              <div className="font-bold text-lg mb-4 flex items-center gap-2" style={{color: primaryColor}}>
+                💸 {t.nieuweOnkost}
+              </div>
+              
+              <div className="space-y-4">
+                {/* Datum */}
+                <div>
+                  <label className="text-sm block mb-1" style={{color: textMuted}}>{t.datum}</label>
+                  <input type="date" value={nieuweOnkost.datum} onChange={e => setNieuweOnkost({...nieuweOnkost, datum: e.target.value})} 
+                    className="w-full border rounded-lg p-3" 
+                    style={{background: darkMode ? '#374151' : 'white', color: textColor, borderColor}} />
+                </div>
+                
+                {/* Type */}
+                <div>
+                  <label className="text-sm block mb-2" style={{color: textMuted}}>Type</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      {id: 'brandstof', icon: '⛽', label: t.brandstof},
+                      {id: 'parkeren', icon: '🅿️', label: t.parkeren},
+                      {id: 'tol', icon: '🛣️', label: t.tol},
+                      {id: 'overig', icon: '📦', label: t.overig}
+                    ].map(type => (
+                      <button
+                        key={type.id}
+                        onClick={() => setNieuweOnkost({...nieuweOnkost, type: type.id})}
+                        className={`py-2 px-3 rounded-lg text-sm font-medium flex items-center justify-center gap-2 ${nieuweOnkost.type === type.id ? 'text-white' : ''}`}
+                        style={{
+                          background: nieuweOnkost.type === type.id ? primaryColor : (darkMode ? '#374151' : '#f3f4f6'),
+                          color: nieuweOnkost.type === type.id ? 'white' : textColor
+                        }}
+                      >
+                        {type.icon} {type.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Bedrag en Omschrijving */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm block mb-1" style={{color: textMuted}}>{t.bedrag} €</label>
+                    <input 
+                      type="number" 
+                      step="0.01" 
+                      value={nieuweOnkost.bedrag} 
+                      onChange={e => setNieuweOnkost({...nieuweOnkost, bedrag: e.target.value})} 
+                      placeholder="0.00"
+                      className="w-full border rounded-lg p-3"
+                      style={{background: darkMode ? '#374151' : 'white', color: textColor, borderColor}} 
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm block mb-1" style={{color: textMuted}}>{t.omschrijving}</label>
+                    <input 
+                      type="text" 
+                      value={nieuweOnkost.omschrijving} 
+                      onChange={e => setNieuweOnkost({...nieuweOnkost, omschrijving: e.target.value})} 
+                      placeholder={lang === 'nl' ? 'optioneel' : 'optional'}
+                      className="w-full border rounded-lg p-3"
+                      style={{background: darkMode ? '#374151' : 'white', color: textColor, borderColor}} 
+                    />
+                  </div>
+                </div>
+                
+                <button onClick={handleAddOnkost} className="w-full py-3 rounded-lg font-bold text-white" style={{background: primaryColor}}>✓ {t.toevoegen}</button>
+              </div>
+            </div>
+            
+            {/* Onkosten lijst */}
+            <div className="rounded-xl shadow overflow-hidden" style={{background: cardBg}}>
+              <div className="p-4 border-b-2" style={{borderColor: primaryColor}}>
+                <span className="font-bold text-lg" style={{color: primaryColor}}>{t.onkosten}</span>
+              </div>
+              
+              {maandOnkosten.length === 0 ? (
+                <div className="p-8 text-center" style={{color: textMuted}}>
+                  <div className="text-4xl mb-2">💸</div>
+                  <div>{t.geenOnkosten}</div>
+                </div>
+              ) : (
+                <>
+                  {maandOnkosten.map((o, i) => (
+                    <div key={o.id} className="p-4 border-b flex items-center gap-3" style={{borderColor, background: i % 2 ? (darkMode ? '#1e293b' : '#f9fafb') : 'transparent'}}>
+                      <div className="text-2xl">
+                        {o.type === 'brandstof' ? '⛽' : o.type === 'parkeren' ? '🅿️' : o.type === 'tol' ? '🛣️' : '📦'}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium">{t[o.type] || o.type}</div>
+                        <div className="text-sm truncate" style={{color: textMuted}}>
+                          {new Date(o.datum).toLocaleDateString(lang === 'nl' ? 'nl-NL' : 'en-GB')}
+                          {o.omschrijving && ` • ${o.omschrijving}`}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-bold">€{o.bedrag.toFixed(2)}</div>
+                      </div>
+                      <button onClick={() => handleDeleteOnkost(o.id)} className="text-red-400 text-xl">×</button>
+                    </div>
+                  ))}
+                  <div className="p-4" style={{background: darkMode ? '#1e293b' : '#f9fafb'}}>
+                    <div className="flex justify-between font-bold" style={{color: primaryColor}}>
+                      <span>{t.totaalOnkosten}</span>
+                      <span>€{totaalOnkosten.toFixed(2)}</span>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* BACKUP */}
         {view === 'backup' && (
           <div className="space-y-4">
@@ -1303,7 +1492,7 @@ export default function RitLogApp() {
       
       <div className="text-center py-6 text-sm flex items-center justify-center gap-2" style={{color: textMuted}}>
         <CaddyIcon size={20} color={textMuted} /> 
-        <span>RitLog v3.3 • Jekel Dienstverlening</span>
+        <span>RitLog v3.4 • Jekel Dienstverlening</span>
       </div>
     </div>
   );
