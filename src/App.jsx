@@ -60,9 +60,10 @@ const TRANSLATIONS = {
     gisteren: 'Gisteren',
     vandaag: 'Vandaag',
     weekend: 'Weekend',
-    checkMaps: 'Check km in Maps',
+    checkMaps: 'Check km in Google Maps',
     gebruiksaanwijzing: 'Gebruiksaanwijzing',
-    hulpRitToevoegen: 'Vul route in → check km via 🗺️ knop → bedrag wordt berekend',
+    hulpRitToevoegen: 'Vul route in → klik "Check km in Google Maps" → vul km in → bedrag wordt berekend',
+    hulpGoogleMaps: 'Opent Google Maps met jouw route, lees daar de kilometers af',
     hulpRitBewerken: 'Tik op een rit in Log om aan te passen',
     hulpRitVerwijderen: 'In bewerk-scherm onderaan',
     hulpFactuur: 'Log → CSV of PDF knop aan einde van de maand',
@@ -127,9 +128,10 @@ const TRANSLATIONS = {
     gisteren: 'Yesterday',
     vandaag: 'Today',
     weekend: 'Weekend',
-    checkMaps: 'Check km in Maps',
+    checkMaps: 'Check km in Google Maps',
     gebruiksaanwijzing: 'How to use',
-    hulpRitToevoegen: 'Enter route → check km via 🗺️ button → amount is calculated',
+    hulpRitToevoegen: 'Enter route → click "Check km in Google Maps" → enter km → amount is calculated',
+    hulpGoogleMaps: 'Opens Google Maps with your route, read the kilometers there',
     hulpRitBewerken: 'Tap a trip in Log to edit',
     hulpRitVerwijderen: 'At the bottom of edit screen',
     hulpFactuur: 'Log → CSV or PDF button at end of month',
@@ -1130,30 +1132,19 @@ export default function RitLogApp() {
               
               <div>
                 <label className="text-sm block mb-1" style={{color: textMuted}}>{t.routeLabel}</label>
-                <div className="flex gap-2">
-                  <input type="text" value={nieuwRit.route} onChange={e => setNieuwRit({...nieuwRit, route: e.target.value})} 
-                    placeholder={t.routePlaceholder} 
-                    className="flex-1 border rounded-lg p-3 text-lg"
-                    style={{background: darkMode ? '#374151' : 'white', color: textColor, borderColor}} />
-                  <button 
-                    onClick={openGoogleMaps}
-                    disabled={!nieuwRit.route}
-                    className="px-3 py-2 rounded-lg text-sm font-medium border flex items-center gap-1 disabled:opacity-40"
-                    style={{
-                      background: darkMode ? '#374151' : 'white',
-                      borderColor,
-                      color: '#4285f4'
-                    }}
-                    title={t.checkMaps}
-                  >
-                    🗺️
-                  </button>
-                </div>
+                <input type="text" value={nieuwRit.route} onChange={e => setNieuwRit({...nieuwRit, route: e.target.value})} 
+                  placeholder={t.routePlaceholder} 
+                  className="w-full border rounded-lg p-3 text-lg"
+                  style={{background: darkMode ? '#374151' : 'white', color: textColor, borderColor}} />
                 {nieuwRit.route && (
                   <button 
                     onClick={openGoogleMaps}
-                    className="mt-2 text-sm flex items-center gap-1 hover:underline"
-                    style={{color: '#4285f4'}}
+                    className="mt-2 w-full py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-2 border-2"
+                    style={{
+                      background: darkMode ? '#1e3a5f' : '#e8f4fd',
+                      borderColor: '#4285f4',
+                      color: '#4285f4'
+                    }}
                   >
                     🗺️ {t.checkMaps}
                   </button>
@@ -1164,15 +1155,15 @@ export default function RitLogApp() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm block mb-1" style={{color: textMuted}}>
-                      {t.km} {geschatteKm && !nieuwRit.kilometers && <span className="text-green-600 font-medium">(≈{geschatteKm})</span>}
+                      {t.km} <span className="text-xs">({lang === 'nl' ? 'van Google Maps' : 'from Google Maps'})</span>
                     </label>
                     <input 
                       type="number" 
                       value={nieuwRit.kilometers} 
                       onChange={e => setNieuwRit({...nieuwRit, kilometers: e.target.value})} 
-                      placeholder={geschatteKm ? `${geschatteKm}` : 'km'} 
-                      className={`w-full border rounded-lg p-3 text-lg ${!nieuwRit.kilometers && geschatteKm ? 'bg-green-50 border-green-300 placeholder-green-600' : ''}`}
-                      style={nieuwRit.kilometers || !geschatteKm ? {background: darkMode ? '#374151' : 'white', color: textColor, borderColor} : {}} 
+                      placeholder={lang === 'nl' ? 'vul km in' : 'enter km'}
+                      className="w-full border rounded-lg p-3 text-lg"
+                      style={{background: darkMode ? '#374151' : 'white', color: textColor, borderColor}} 
                     />
                   </div>
                   <div>
@@ -1270,6 +1261,7 @@ export default function RitLogApp() {
               <strong>📖 {t.gebruiksaanwijzing}</strong>
               <ul className="mt-2 space-y-1 text-sm" style={{color: textMuted}}>
                 <li>➕ <strong>{t.rit} {lang === 'nl' ? 'toevoegen' : 'add'}:</strong> {t.hulpRitToevoegen}</li>
+                <li>🗺️ <strong>Google Maps:</strong> {t.hulpGoogleMaps}</li>
                 <li>✏️ <strong>{t.rit} {lang === 'nl' ? 'bewerken' : 'edit'}:</strong> {t.hulpRitBewerken}</li>
                 <li>🗑️ <strong>{t.rit} {lang === 'nl' ? 'verwijderen' : 'delete'}:</strong> {t.hulpRitVerwijderen}</li>
                 <li>📄 <strong>{lang === 'nl' ? 'Factuur maken' : 'Create invoice'}:</strong> {t.hulpFactuur}</li>
