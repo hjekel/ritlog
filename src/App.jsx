@@ -57,8 +57,12 @@ const TRANSLATIONS = {
     nietGewerkt: 'Niet gewerkt',
     totaal: 'Totaal',
     tikOmTeBewerken: 'Tik op een rit om te bewerken',
+    gisteren: 'Gisteren',
+    vandaag: 'Vandaag',
+    weekend: 'Weekend',
+    checkMaps: 'Check km in Maps',
     gebruiksaanwijzing: 'Gebruiksaanwijzing',
-    hulpRitToevoegen: 'Vul route in → km en bedrag worden automatisch berekend',
+    hulpRitToevoegen: 'Vul route in → check km via 🗺️ knop → bedrag wordt berekend',
     hulpRitBewerken: 'Tik op een rit in Log om aan te passen',
     hulpRitVerwijderen: 'In bewerk-scherm onderaan',
     hulpFactuur: 'Log → CSV of PDF knop aan einde van de maand',
@@ -120,8 +124,12 @@ const TRANSLATIONS = {
     nietGewerkt: 'Not worked',
     totaal: 'Total',
     tikOmTeBewerken: 'Tap a trip to edit',
+    gisteren: 'Yesterday',
+    vandaag: 'Today',
+    weekend: 'Weekend',
+    checkMaps: 'Check km in Maps',
     gebruiksaanwijzing: 'How to use',
-    hulpRitToevoegen: 'Enter route → km and amount are calculated automatically',
+    hulpRitToevoegen: 'Enter route → check km via 🗺️ button → amount is calculated',
     hulpRitBewerken: 'Tap a trip in Log to edit',
     hulpRitVerwijderen: 'At the bottom of edit screen',
     hulpFactuur: 'Log → CSV or PDF button at end of month',
@@ -233,7 +241,7 @@ const Kalender = ({ maand, jaar, ritten, t, darkMode, primaryColor }) => {
       <div className="p-3">
         <div className="grid grid-cols-7 gap-1 mb-2">
           {t.dagenKort.map((dag, i) => (
-            <div key={i} className="text-center text-xs font-medium" style={{color: darkMode ? '#9ca3af' : '#6b7280'}}>
+            <div key={i} className={`text-center text-xs font-medium ${i === 0 || i === 6 ? 'opacity-60' : ''}`} style={{color: darkMode ? '#9ca3af' : '#6b7280'}}>
               {dag}
             </div>
           ))}
@@ -246,15 +254,17 @@ const Kalender = ({ maand, jaar, ritten, t, darkMode, primaryColor }) => {
               const heeftRit = ritDagen.has(dag);
               const isVandaag = isHuidigeMaand && dag === vandaagDag;
               const isVerleden = new Date(jaar, maand, dag) < new Date(vandaag.getFullYear(), vandaag.getMonth(), vandaag.getDate());
+              const isWeekend = di === 0 || di === 6; // Zondag of Zaterdag
               
               return (
                 <div 
                   key={di} 
                   className={`h-8 rounded flex items-center justify-center text-sm relative ${isVandaag ? 'ring-2 ring-offset-1' : ''}`}
                   style={{
-                    background: heeftRit ? '#22c55e' : (isVerleden ? '#ef4444' : (darkMode ? '#374151' : '#f3f4f6')),
+                    background: heeftRit ? '#22c55e' : (isVerleden ? (isWeekend ? '#f87171' : '#ef4444') : (darkMode ? '#374151' : (isWeekend ? '#e5e7eb' : '#f3f4f6'))),
                     color: heeftRit || isVerleden ? 'white' : (darkMode ? '#e4e4e7' : '#374151'),
-                    ringColor: primaryColor
+                    ringColor: primaryColor,
+                    opacity: isWeekend && !heeftRit && !isVerleden ? 0.7 : 1
                   }}
                 >
                   {dag}
@@ -552,6 +562,62 @@ export default function RitLogApp() {
     return cleaned.replace(/Houten-Houten/gi, 'Houten');
   };
 
+  // Datum helpers
+  const getVandaag = () => new Date().toISOString().split('T')[0];
+  const getGisteren = () => {
+    const gisteren = new Date();
+    gisteren.setDate(gisteren.getDate() - 1);
+    return gisteren.toISOString().split('T')[0];
+  };
+
+  // Bereken volgende ritnummer voor een bepaalde datum
+  const getVolgendeRitNummer = (datum) => {
+    const datumObj = new Date(datum);
+    const maand = datumObj.getMonth();
+    const jaar = datumObj.getFullYear();
+    const dag = datumObj.getDate();
+    
+    // Vind ritten van dezelfde dag
+    const rittenVandaag = ritten.filter(r => 
+      r.maand === maand && r.jaar === jaar && r.dagNummer === dag
+    );
+    
+    if (rittenVandaag.length > 0) {
+      // Er zijn al ritten vandaag, pak het hoogste nummer + 1
+      const hoogsteNummer = Math.max(...rittenVandaag.map(r => r.ritNummer));
+      return hoogsteNummer + 1;
+    }
+    
+    // Geen ritten vandaag, begin bij 1
+    return 1;
+  };
+
+  // Handler voor datum wijziging met automatische rit# reset
+  const handleDatumChange = (nieuweDatum) => {
+    const volgendeNummer = getVolgendeRitNummer(nieuweDatum);
+    setNieuwRit({...nieuwRit, datum: nieuweDatum, ritNummer: volgendeNummer});
+  };
+
+  // Open Google Maps met route voor km check
+  const openGoogleMaps = () => {
+    if (!nieuwRit.route) return;
+    
+    // Maak route string: Houten als start en eind
+    const routeParts = nieuwRit.route
+      .split(/[-,\/]/)
+      .map(s => s.trim())
+      .filter(s => s.length > 0);
+    
+    // Voeg Houten toe aan begin en eind als niet aanwezig
+    const fullRoute = ['Houten', ...routeParts, 'Houten'];
+    
+    // Bouw Google Maps URL met waypoints
+    // Format: /dir/plaats1/plaats2/plaats3/...
+    const mapsUrl = 'https://www.google.com/maps/dir/' + fullRoute.map(p => encodeURIComponent(p + ', Nederland')).join('/');
+    
+    window.open(mapsUrl, '_blank');
+  };
+
   const handleAddRit = async () => {
     if (!nieuwRit.route) { alert(t.vulRouteIn); return; }
     
@@ -726,7 +792,7 @@ export default function RitLogApp() {
           </tr>
         </table>
         <div class="footer">
-          Gegenereerd door RitLog v2.9 • ${new Date().toLocaleDateString('nl-NL')}
+          Gegenereerd door RitLog v3.1 • ${new Date().toLocaleDateString('nl-NL')}
         </div>
       </body>
       </html>
@@ -741,7 +807,7 @@ export default function RitLogApp() {
   };
 
   const exportBackupJSON = () => {
-    const data = JSON.stringify({ ritten, logboek, exportDatum: new Date().toISOString(), versie: '2.9' }, null, 2);
+    const data = JSON.stringify({ ritten, logboek, exportDatum: new Date().toISOString(), versie: '3.1' }, null, 2);
     const blob = new Blob([data], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -1022,27 +1088,76 @@ export default function RitLogApp() {
             </div>
             
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm block mb-1" style={{color: textMuted}}>{t.datum}</label>
-                  <input type="date" value={nieuwRit.datum} onChange={e => setNieuwRit({...nieuwRit, datum: e.target.value})} 
-                    className="w-full border rounded-lg p-3 text-lg" 
+              {/* Datum met snelknoppen */}
+              <div>
+                <label className="text-sm block mb-1" style={{color: textMuted}}>{t.datum}</label>
+                <div className="flex gap-2">
+                  <input type="date" value={nieuwRit.datum} onChange={e => handleDatumChange(e.target.value)} 
+                    className="flex-1 border rounded-lg p-3 text-lg" 
                     style={{background: darkMode ? '#374151' : 'white', color: textColor, borderColor}} />
+                  <button 
+                    onClick={() => handleDatumChange(getGisteren())}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium border ${nieuwRit.datum === getGisteren() ? 'text-white' : ''}`}
+                    style={{
+                      background: nieuwRit.datum === getGisteren() ? primaryColor : (darkMode ? '#374151' : 'white'),
+                      borderColor,
+                      color: nieuwRit.datum === getGisteren() ? 'white' : textMuted
+                    }}
+                  >
+                    {t.gisteren}
+                  </button>
+                  <button 
+                    onClick={() => handleDatumChange(getVandaag())}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium border ${nieuwRit.datum === getVandaag() ? 'text-white' : ''}`}
+                    style={{
+                      background: nieuwRit.datum === getVandaag() ? primaryColor : (darkMode ? '#374151' : 'white'),
+                      borderColor,
+                      color: nieuwRit.datum === getVandaag() ? 'white' : textMuted
+                    }}
+                  >
+                    {t.vandaag}
+                  </button>
                 </div>
-                <div>
-                  <label className="text-sm block mb-1" style={{color: textMuted}}>{t.rit} #</label>
-                  <input type="number" min="1" value={nieuwRit.ritNummer} onChange={e => setNieuwRit({...nieuwRit, ritNummer: e.target.value})} 
-                    className="w-full border rounded-lg p-3 text-lg"
-                    style={{background: darkMode ? '#374151' : 'white', color: textColor, borderColor}} />
-                </div>
+              </div>
+              
+              {/* Rit # */}
+              <div>
+                <label className="text-sm block mb-1" style={{color: textMuted}}>{t.rit} #</label>
+                <input type="number" min="1" value={nieuwRit.ritNummer} onChange={e => setNieuwRit({...nieuwRit, ritNummer: e.target.value})} 
+                  className="w-full border rounded-lg p-3 text-lg"
+                  style={{background: darkMode ? '#374151' : 'white', color: textColor, borderColor}} />
               </div>
               
               <div>
                 <label className="text-sm block mb-1" style={{color: textMuted}}>{t.routeLabel}</label>
-                <input type="text" value={nieuwRit.route} onChange={e => setNieuwRit({...nieuwRit, route: e.target.value})} 
-                  placeholder={t.routePlaceholder} 
-                  className="w-full border rounded-lg p-3 text-lg"
-                  style={{background: darkMode ? '#374151' : 'white', color: textColor, borderColor}} />
+                <div className="flex gap-2">
+                  <input type="text" value={nieuwRit.route} onChange={e => setNieuwRit({...nieuwRit, route: e.target.value})} 
+                    placeholder={t.routePlaceholder} 
+                    className="flex-1 border rounded-lg p-3 text-lg"
+                    style={{background: darkMode ? '#374151' : 'white', color: textColor, borderColor}} />
+                  <button 
+                    onClick={openGoogleMaps}
+                    disabled={!nieuwRit.route}
+                    className="px-3 py-2 rounded-lg text-sm font-medium border flex items-center gap-1 disabled:opacity-40"
+                    style={{
+                      background: darkMode ? '#374151' : 'white',
+                      borderColor,
+                      color: '#4285f4'
+                    }}
+                    title={t.checkMaps}
+                  >
+                    🗺️
+                  </button>
+                </div>
+                {nieuwRit.route && (
+                  <button 
+                    onClick={openGoogleMaps}
+                    className="mt-2 text-sm flex items-center gap-1 hover:underline"
+                    style={{color: '#4285f4'}}
+                  >
+                    🗺️ {t.checkMaps}
+                  </button>
+                )}
               </div>
               
               {!nieuwRit.isUurloon ? (
@@ -1168,7 +1283,7 @@ export default function RitLogApp() {
       
       <div className="text-center py-6 text-sm flex items-center justify-center gap-2" style={{color: textMuted}}>
         <CaddyIcon size={20} color={textMuted} /> 
-        <span>RitLog v2.9 • Jekel Dienstverlening</span>
+        <span>RitLog v3.1 • Jekel Dienstverlening</span>
       </div>
     </div>
   );
