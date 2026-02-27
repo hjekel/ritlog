@@ -72,14 +72,18 @@ const TRANSLATIONS = {
     hulpKalender: 'Groen = gewerkt, Rood = niet gewerkt',
     onkosten: 'Onkosten',
     nieuweOnkost: 'Nieuwe onkost',
-    brandstof: 'Brandstof',
+    tanken: 'Tanken',
+    etenDrinken: 'Eten & Drinken',
     parkeren: 'Parkeren',
-    tol: 'Tol/Vignetten',
     overig: 'Overig',
     omschrijving: 'Omschrijving',
     geenOnkosten: 'Geen onkosten deze maand',
     totaalOnkosten: 'Totaal onkosten:',
-    hulpOnkosten: 'Houd brandstof, parkeren en andere kosten bij'
+    hulpOnkosten: 'Houd brandstof, parkeren en andere kosten bij',
+    zoekTankstation: 'Zoek goedkoop tankstation',
+    plakRoute: 'Plak route van WhatsApp',
+    routeHerkend: 'Route herkend',
+    plaatsen: 'plaatsen'
   },
   en: {
     maanden: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
@@ -151,14 +155,18 @@ const TRANSLATIONS = {
     hulpKalender: 'Green = worked, Red = not worked',
     onkosten: 'Expenses',
     nieuweOnkost: 'New expense',
-    brandstof: 'Fuel',
+    tanken: 'Fuel',
+    etenDrinken: 'Food & Drinks',
     parkeren: 'Parking',
-    tol: 'Toll/Vignettes',
     overig: 'Other',
     omschrijving: 'Description',
     geenOnkosten: 'No expenses this month',
     totaalOnkosten: 'Total expenses:',
-    hulpOnkosten: 'Track fuel, parking and other costs'
+    hulpOnkosten: 'Track fuel, parking and other costs',
+    zoekTankstation: 'Find cheap gas station',
+    plakRoute: 'Paste route from WhatsApp',
+    routeHerkend: 'Route recognized',
+    plaatsen: 'places'
   }
 };
 
@@ -513,7 +521,7 @@ export default function RitLogApp() {
   // Onkosten form state
   const [nieuweOnkost, setNieuweOnkost] = useState({
     datum: new Date().toISOString().split('T')[0],
-    type: 'brandstof',
+    type: 'tanken',
     bedrag: '',
     omschrijving: ''
   });
@@ -761,7 +769,7 @@ export default function RitLogApp() {
     setOnkosten(newOnkosten);
     await saveData(ritten, logboek, newOnkosten);
     
-    setNieuweOnkost({ datum: nieuweOnkost.datum, type: 'brandstof', bedrag: '', omschrijving: '' });
+    setNieuweOnkost({ datum: nieuweOnkost.datum, type: 'tanken', bedrag: '', omschrijving: '' });
   };
 
   const handleDeleteOnkost = async (id) => {
@@ -785,6 +793,46 @@ export default function RitLogApp() {
     route = route.replace(/naar|to/gi, ' - ').trim();
     setNieuwRit(prev => ({ ...prev, route: route || prev.route, kilometers: km || prev.kilometers, totaalBedrag: bedrag || prev.totaalBedrag, uren: uren || prev.uren, isUurloon: uren ? true : prev.isUurloon }));
   };
+
+  // WhatsApp route parser
+  // Voorbeelden: "ANP Brink - Papendrecht - Wanroij - Arnhem" of "AMP - Dpp - Bussum - Almere"
+  const parseWhatsAppRoute = (text) => {
+    // Verwijder bekende laadlocaties (ANP, DPP, AMP, Brink etc) en behoud bestemmingen
+    let cleaned = text;
+    
+    // Bekende laadlocaties in Houten (verwijderen uit route)
+    const laadLocaties = ['anp', 'amp', 'dpp', 'brink', 'sorgente'];
+    
+    // Split op streepjes, komma's of spaties
+    let delen = cleaned.split(/[-,\s]+/).filter(d => d.trim());
+    
+    // Filter laadlocaties eruit en behoud bestemmingen
+    const bestemmingen = delen.filter(deel => {
+      const lowerDeel = deel.toLowerCase().trim();
+      // Sla laadlocaties over
+      if (laadLocaties.includes(lowerDeel)) return false;
+      // Sla lege strings en hele korte woorden over
+      if (lowerDeel.length < 2) return false;
+      // Sla notities over zoals "laden", "ophalen", "bellen"
+      if (['laden', 'ophalen', 'bellen', 'iets'].includes(lowerDeel)) return false;
+      return true;
+    });
+    
+    if (bestemmingen.length === 0) return null;
+    
+    // Maak route string
+    const routeString = bestemmingen.join('-');
+    
+    return {
+      route: routeString,
+      aantalPlaatsen: bestemmingen.length,
+      plaatsen: bestemmingen
+    };
+  };
+
+  const [showRoutePaste, setShowRoutePaste] = useState(false);
+  const [routePasteText, setRoutePasteText] = useState('');
+  const [parsedRoute, setParsedRoute] = useState(null);
 
   const maandRitten = ritten.filter(r => r.maand === huidigeMaand && r.jaar === huidigJaar);
   const totaalExclBTW = maandRitten.reduce((s, r) => s + (r.correctie || 0), 0);
@@ -878,7 +926,7 @@ export default function RitLogApp() {
           </tr>
         </table>
         <div class="footer">
-          Gegenereerd door RitLog v3.4 • ${new Date().toLocaleDateString('nl-NL')}
+          Gegenereerd door RitLog v3.5 • ${new Date().toLocaleDateString('nl-NL')}
         </div>
       </body>
       </html>
@@ -893,7 +941,7 @@ export default function RitLogApp() {
   };
 
   const exportBackupJSON = () => {
-    const data = JSON.stringify({ ritten, logboek, exportDatum: new Date().toISOString(), versie: '3.4' }, null, 2);
+    const data = JSON.stringify({ ritten, logboek, exportDatum: new Date().toISOString(), versie: '3.5' }, null, 2);
     const blob = new Blob([data], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -1236,6 +1284,76 @@ export default function RitLogApp() {
                   placeholder={t.routePlaceholder} 
                   className="w-full border rounded-lg p-3 text-lg"
                   style={{background: darkMode ? '#374151' : 'white', color: textColor, borderColor}} />
+                
+                {/* WhatsApp route paste knop */}
+                <button 
+                  onClick={() => setShowRoutePaste(!showRoutePaste)}
+                  className="mt-2 w-full py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-2 border-2"
+                  style={{
+                    background: darkMode ? '#1e3a2e' : '#dcfce7',
+                    borderColor: '#22c55e',
+                    color: '#22c55e'
+                  }}
+                >
+                  📱 {t.plakRoute}
+                </button>
+                
+                {/* WhatsApp route paste modal */}
+                {showRoutePaste && (
+                  <div className="mt-2 p-3 rounded-lg border-2" style={{borderColor: '#22c55e', background: darkMode ? '#1e3a2e' : '#f0fdf4'}}>
+                    <textarea
+                      value={routePasteText}
+                      onChange={e => {
+                        setRoutePasteText(e.target.value);
+                        const parsed = parseWhatsAppRoute(e.target.value);
+                        setParsedRoute(parsed);
+                      }}
+                      placeholder={lang === 'nl' ? 'Plak hier de route van WhatsApp...\nbijv: ANP Brink - Papendrecht - Wanroij - Arnhem' : 'Paste route from WhatsApp here...'}
+                      className="w-full border rounded-lg p-2 text-sm"
+                      rows={3}
+                      style={{background: darkMode ? '#374151' : 'white', color: textColor, borderColor}}
+                    />
+                    {parsedRoute && (
+                      <div className="mt-2 p-2 rounded bg-green-100 dark:bg-green-900/30">
+                        <div className="text-sm font-medium text-green-700 dark:text-green-300">
+                          ✓ {t.routeHerkend}: {parsedRoute.aantalPlaatsen} {t.plaatsen}
+                        </div>
+                        <div className="text-xs text-green-600 dark:text-green-400 mt-1">
+                          {parsedRoute.plaatsen.join(' → ')}
+                        </div>
+                      </div>
+                    )}
+                    <div className="flex gap-2 mt-2">
+                      <button 
+                        onClick={() => {
+                          setShowRoutePaste(false);
+                          setRoutePasteText('');
+                          setParsedRoute(null);
+                        }}
+                        className="flex-1 py-2 rounded-lg border text-sm"
+                        style={{borderColor, color: textMuted}}
+                      >
+                        {t.annuleren}
+                      </button>
+                      <button 
+                        onClick={() => {
+                          if (parsedRoute) {
+                            setNieuwRit({...nieuwRit, route: parsedRoute.route});
+                          }
+                          setShowRoutePaste(false);
+                          setRoutePasteText('');
+                          setParsedRoute(null);
+                        }}
+                        disabled={!parsedRoute}
+                        className="flex-1 py-2 rounded-lg text-white text-sm font-medium disabled:opacity-40"
+                        style={{background: '#22c55e'}}
+                      >
+                        ✓ {t.toevoegen}
+                      </button>
+                    </div>
+                  </div>
+                )}
+                
                 <button 
                   onClick={openGoogleMaps}
                   disabled={!nieuwRit.route}
@@ -1344,9 +1462,9 @@ export default function RitLogApp() {
                   <label className="text-sm block mb-2" style={{color: textMuted}}>Type</label>
                   <div className="grid grid-cols-2 gap-2">
                     {[
-                      {id: 'brandstof', icon: '⛽', label: t.brandstof},
+                      {id: 'tanken', icon: '⛽', label: t.tanken},
+                      {id: 'etenDrinken', icon: '☕', label: t.etenDrinken},
                       {id: 'parkeren', icon: '🅿️', label: t.parkeren},
-                      {id: 'tol', icon: '🛣️', label: t.tol},
                       {id: 'overig', icon: '📦', label: t.overig}
                     ].map(type => (
                       <button
@@ -1363,6 +1481,21 @@ export default function RitLogApp() {
                     ))}
                   </div>
                 </div>
+                
+                {/* Zoek tankstation knop */}
+                {nieuweOnkost.type === 'tanken' && (
+                  <button 
+                    onClick={() => window.open('https://www.google.com/maps/search/tankstation/', '_blank')}
+                    className="w-full py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-2 border-2"
+                    style={{
+                      background: darkMode ? '#1e3a5f' : '#e8f4fd',
+                      borderColor: '#4285f4',
+                      color: '#4285f4'
+                    }}
+                  >
+                    ⛽ {t.zoekTankstation}
+                  </button>
+                )}
                 
                 {/* Bedrag en Omschrijving */}
                 <div className="grid grid-cols-2 gap-4">
@@ -1411,7 +1544,7 @@ export default function RitLogApp() {
                   {maandOnkosten.map((o, i) => (
                     <div key={o.id} className="p-4 border-b flex items-center gap-3" style={{borderColor, background: i % 2 ? (darkMode ? '#1e293b' : '#f9fafb') : 'transparent'}}>
                       <div className="text-2xl">
-                        {o.type === 'brandstof' ? '⛽' : o.type === 'parkeren' ? '🅿️' : o.type === 'tol' ? '🛣️' : '📦'}
+                        {o.type === 'tanken' ? '⛽' : o.type === 'etenDrinken' ? '☕' : o.type === 'parkeren' ? '🅿️' : '📦'}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="font-medium">{t[o.type] || o.type}</div>
@@ -1492,7 +1625,7 @@ export default function RitLogApp() {
       
       <div className="text-center py-6 text-sm flex items-center justify-center gap-2" style={{color: textMuted}}>
         <CaddyIcon size={20} color={textMuted} /> 
-        <span>RitLog v3.4 • Jekel Dienstverlening</span>
+        <span>RitLog v3.5 • Jekel Dienstverlening</span>
       </div>
     </div>
   );
