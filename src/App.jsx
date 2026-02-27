@@ -83,7 +83,11 @@ const TRANSLATIONS = {
     zoekTankstation: 'Zoek goedkoop tankstation',
     plakRoute: 'Plak route van WhatsApp',
     routeHerkend: 'Route herkend',
-    plaatsen: 'plaatsen'
+    plaatsen: 'plaatsen',
+    bonnetje: 'Bonnetje',
+    fotoToevoegen: 'Foto toevoegen',
+    fotoVerwijderen: 'Foto verwijderen',
+    geenFoto: 'Geen foto'
   },
   en: {
     maanden: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
@@ -166,7 +170,11 @@ const TRANSLATIONS = {
     zoekTankstation: 'Find cheap gas station',
     plakRoute: 'Paste route from WhatsApp',
     routeHerkend: 'Route recognized',
-    plaatsen: 'places'
+    plaatsen: 'places',
+    bonnetje: 'Receipt',
+    fotoToevoegen: 'Add photo',
+    fotoVerwijderen: 'Remove photo',
+    geenFoto: 'No photo'
   }
 };
 
@@ -523,7 +531,8 @@ export default function RitLogApp() {
     datum: new Date().toISOString().split('T')[0],
     type: 'tanken',
     bedrag: '',
-    omschrijving: ''
+    omschrijving: '',
+    foto: null // base64 string
   });
   
   // Taal en thema
@@ -762,14 +771,52 @@ export default function RitLogApp() {
       jaar: datum.getFullYear(),
       type: nieuweOnkost.type,
       bedrag: parseFloat(nieuweOnkost.bedrag),
-      omschrijving: nieuweOnkost.omschrijving || ''
+      omschrijving: nieuweOnkost.omschrijving || '',
+      foto: nieuweOnkost.foto || null
     };
     
     const newOnkosten = [...onkosten, onkost].sort((a, b) => a.datum.localeCompare(b.datum));
     setOnkosten(newOnkosten);
     await saveData(ritten, logboek, newOnkosten);
     
-    setNieuweOnkost({ datum: nieuweOnkost.datum, type: 'tanken', bedrag: '', omschrijving: '' });
+    setNieuweOnkost({ datum: nieuweOnkost.datum, type: 'tanken', bedrag: '', omschrijving: '', foto: null });
+  };
+
+  // Foto handler voor bonnetjes
+  const handleFotoUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // Resize en compress de foto
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const maxSize = 800; // Max breedte/hoogte
+        let width = img.width;
+        let height = img.height;
+        
+        if (width > height && width > maxSize) {
+          height = (height * maxSize) / width;
+          width = maxSize;
+        } else if (height > maxSize) {
+          width = (width * maxSize) / height;
+          height = maxSize;
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Compress naar JPEG
+        const base64 = canvas.toDataURL('image/jpeg', 0.7);
+        setNieuweOnkost(prev => ({...prev, foto: base64}));
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleDeleteOnkost = async (id) => {
@@ -926,7 +973,7 @@ export default function RitLogApp() {
           </tr>
         </table>
         <div class="footer">
-          Gegenereerd door RitLog v3.5 • ${new Date().toLocaleDateString('nl-NL')}
+          Gegenereerd door RitLog v3.6 • ${new Date().toLocaleDateString('nl-NL')}
         </div>
       </body>
       </html>
@@ -941,7 +988,7 @@ export default function RitLogApp() {
   };
 
   const exportBackupJSON = () => {
-    const data = JSON.stringify({ ritten, logboek, exportDatum: new Date().toISOString(), versie: '3.5' }, null, 2);
+    const data = JSON.stringify({ ritten, logboek, exportDatum: new Date().toISOString(), versie: '3.6' }, null, 2);
     const blob = new Blob([data], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -1482,19 +1529,32 @@ export default function RitLogApp() {
                   </div>
                 </div>
                 
-                {/* Zoek tankstation knop */}
+                {/* Zoek tankstation knoppen */}
                 {nieuweOnkost.type === 'tanken' && (
-                  <button 
-                    onClick={() => window.open('https://www.google.com/maps/search/tankstation/', '_blank')}
-                    className="w-full py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-2 border-2"
-                    style={{
-                      background: darkMode ? '#1e3a5f' : '#e8f4fd',
-                      borderColor: '#4285f4',
-                      color: '#4285f4'
-                    }}
-                  >
-                    ⛽ {t.zoekTankstation}
-                  </button>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button 
+                      onClick={() => window.open('https://www.google.com/maps/search/tankstation/', '_blank')}
+                      className="py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-1 border-2"
+                      style={{
+                        background: darkMode ? '#1e3a5f' : '#e8f4fd',
+                        borderColor: '#4285f4',
+                        color: '#4285f4'
+                      }}
+                    >
+                      🗺️ Google Maps
+                    </button>
+                    <button 
+                      onClick={() => window.open('https://www.tankservice.nl/brandstofprijzen/', '_blank')}
+                      className="py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-1 border-2"
+                      style={{
+                        background: darkMode ? '#2d1e3a' : '#fdf4ff',
+                        borderColor: '#a855f7',
+                        color: '#a855f7'
+                      }}
+                    >
+                      💰 {lang === 'nl' ? 'Goedkoopste' : 'Cheapest'}
+                    </button>
+                  </div>
                 )}
                 
                 {/* Bedrag en Omschrijving */}
@@ -1524,6 +1584,38 @@ export default function RitLogApp() {
                   </div>
                 </div>
                 
+                {/* Bonnetje foto */}
+                <div>
+                  <label className="text-sm block mb-1" style={{color: textMuted}}>📷 {t.bonnetje}</label>
+                  {nieuweOnkost.foto ? (
+                    <div className="relative">
+                      <img 
+                        src={nieuweOnkost.foto} 
+                        alt="Bonnetje" 
+                        className="w-full h-32 object-cover rounded-lg border"
+                        style={{borderColor}}
+                      />
+                      <button 
+                        onClick={() => setNieuweOnkost({...nieuweOnkost, foto: null})}
+                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ) : (
+                    <label className="block w-full py-3 rounded-lg border-2 border-dashed text-center cursor-pointer hover:opacity-80" style={{borderColor}}>
+                      <span style={{color: textMuted}}>📷 {t.fotoToevoegen}</span>
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        capture="environment"
+                        onChange={handleFotoUpload} 
+                        className="hidden" 
+                      />
+                    </label>
+                  )}
+                </div>
+                
                 <button onClick={handleAddOnkost} className="w-full py-3 rounded-lg font-bold text-white" style={{background: primaryColor}}>✓ {t.toevoegen}</button>
               </div>
             </div>
@@ -1547,7 +1639,10 @@ export default function RitLogApp() {
                         {o.type === 'tanken' ? '⛽' : o.type === 'etenDrinken' ? '☕' : o.type === 'parkeren' ? '🅿️' : '📦'}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="font-medium">{t[o.type] || o.type}</div>
+                        <div className="font-medium flex items-center gap-1">
+                          {t[o.type] || o.type}
+                          {o.foto && <span title={t.bonnetje}>📷</span>}
+                        </div>
                         <div className="text-sm truncate" style={{color: textMuted}}>
                           {new Date(o.datum).toLocaleDateString(lang === 'nl' ? 'nl-NL' : 'en-GB')}
                           {o.omschrijving && ` • ${o.omschrijving}`}
@@ -1556,6 +1651,14 @@ export default function RitLogApp() {
                       <div className="text-right">
                         <div className="font-bold">€{o.bedrag.toFixed(2)}</div>
                       </div>
+                      {o.foto && (
+                        <button 
+                          onClick={() => window.open(o.foto, '_blank')}
+                          className="text-blue-400 text-sm"
+                        >
+                          👁️
+                        </button>
+                      )}
                       <button onClick={() => handleDeleteOnkost(o.id)} className="text-red-400 text-xl">×</button>
                     </div>
                   ))}
@@ -1625,7 +1728,7 @@ export default function RitLogApp() {
       
       <div className="text-center py-6 text-sm flex items-center justify-center gap-2" style={{color: textMuted}}>
         <CaddyIcon size={20} color={textMuted} /> 
-        <span>RitLog v3.5 • Jekel Dienstverlening</span>
+        <span>RitLog v3.6 • Jekel Dienstverlening</span>
       </div>
     </div>
   );
