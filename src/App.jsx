@@ -1544,7 +1544,7 @@ export default function RitLogApp() {
                       🗺️ Google Maps
                     </button>
                     <button 
-                      onClick={() => window.open('https://www.tankservice.nl/brandstofprijzen/', '_blank')}
+                      onClick={() => window.open('https://www.brandstof-zoeker.nl/', '_blank')}
                       className="py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-1 border-2"
                       style={{
                         background: darkMode ? '#2d1e3a' : '#fdf4ff',
