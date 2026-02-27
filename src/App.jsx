@@ -1552,7 +1552,7 @@ export default function RitLogApp() {
                         color: '#a855f7'
                       }}
                     >
-                      💰 {lang === 'nl' ? 'Goedkoopste' : 'Cheapest'}
+                      ⛽ {lang === 'nl' ? 'Goedkoop Tanken' : 'Cheap Fuel'}
                     </button>
                   </div>
                 )}
