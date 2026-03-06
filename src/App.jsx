@@ -9,6 +9,7 @@ const TRANSLATIONS = {
     ritten: 'ritten',
     rit: 'Rit',
     log: 'Log',
+    onkosten: 'Onkosten',
     backup: 'Backup',
     nieuweRit: 'Nieuwe Rit',
     bewerkRit: 'Rit bewerken',
@@ -53,7 +54,6 @@ const TRANSLATIONS = {
     konNietBerekenen: 'Kon bedrag niet berekenen',
     bevestigVerwijderen: 'Verwijderen?',
     kalender: 'Kalender',
-    tikOpDag: 'Tik op een dag',
     gewerkt: 'Gewerkt',
     nietGewerkt: 'Niet gewerkt',
     totaal: 'Totaal',
@@ -61,33 +61,27 @@ const TRANSLATIONS = {
     gisteren: 'Gisteren',
     vandaag: 'Vandaag',
     weekend: 'Weekend',
-    checkMaps: 'Check km in Google Maps',
+    checkMaps: 'Check km in Maps',
     gebruiksaanwijzing: 'Gebruiksaanwijzing',
-    hulpRitToevoegen: 'Vul route in → klik "Check km in Google Maps" → vul km in → bedrag wordt berekend',
-    hulpGoogleMaps: 'Opent Google Maps met jouw route, lees daar de kilometers af',
+    hulpRitToevoegen: 'Vul route in → check km via 🗺️ knop → bedrag wordt berekend',
     hulpRitBewerken: 'Tik op een rit in Log om aan te passen',
     hulpRitVerwijderen: 'In bewerk-scherm onderaan',
     hulpFactuur: 'Log → CSV of PDF knop aan einde van de maand',
     hulpBackup: 'Regelmatig JSON downloaden voor herstel',
     hulpKalender: 'Groen = gewerkt, Rood = niet gewerkt',
-    onkosten: 'Onkosten',
-    nieuweOnkost: 'Nieuwe onkost',
-    tanken: 'Tanken',
-    etenDrinken: 'Eten & Drinken',
-    parkeren: 'Parkeren',
-    overig: 'Overig',
-    omschrijving: 'Omschrijving',
-    geenOnkosten: 'Geen onkosten deze maand',
-    totaalOnkosten: 'Totaal onkosten:',
-    hulpOnkosten: 'Houd brandstof, parkeren en andere kosten bij',
-    zoekTankstation: 'Zoek goedkoop tankstation',
-    plakRoute: 'Plak route van WhatsApp',
-    routeHerkend: 'Route herkend',
-    plaatsen: 'plaatsen',
-    bonnetje: 'Bonnetje',
-    fotoToevoegen: 'Foto toevoegen',
-    fotoVerwijderen: 'Foto verwijderen',
-    geenFoto: 'Geen foto'
+    // Nieuwe v3.0 vertalingen
+    tussenstops: 'Tussenstops',
+    tussenstopsInfo: 'stops × €5',
+    wachttijd: 'Wachttijd',
+    wachttijdInfo: '× 15 min = €5',
+    piektoeslag: 'Piektoeslag',
+    piektoeslagInfo: '+€10',
+    extraBedrag: 'Extra',
+    extraBedragInfo: 'Vrij in te vullen',
+    geenWachttijd: 'Geen',
+    minuten: 'min',
+    basisprijs: 'Basisprijs',
+    toeslagen: 'Toeslagen'
   },
   en: {
     maanden: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
@@ -96,6 +90,7 @@ const TRANSLATIONS = {
     ritten: 'trips',
     rit: 'Trip',
     log: 'Log',
+    onkosten: 'Expenses',
     backup: 'Backup',
     nieuweRit: 'New Trip',
     bewerkRit: 'Edit trip',
@@ -140,7 +135,6 @@ const TRANSLATIONS = {
     konNietBerekenen: 'Could not calculate amount',
     bevestigVerwijderen: 'Delete?',
     kalender: 'Calendar',
-    tikOpDag: 'Tap a day',
     gewerkt: 'Worked',
     nietGewerkt: 'Not worked',
     totaal: 'Total',
@@ -148,39 +142,36 @@ const TRANSLATIONS = {
     gisteren: 'Yesterday',
     vandaag: 'Today',
     weekend: 'Weekend',
-    checkMaps: 'Check km in Google Maps',
+    checkMaps: 'Check km in Maps',
     gebruiksaanwijzing: 'How to use',
-    hulpRitToevoegen: 'Enter route → click "Check km in Google Maps" → enter km → amount is calculated',
-    hulpGoogleMaps: 'Opens Google Maps with your route, read the kilometers there',
+    hulpRitToevoegen: 'Enter route → check km via 🗺️ button → amount is calculated',
     hulpRitBewerken: 'Tap a trip in Log to edit',
     hulpRitVerwijderen: 'At the bottom of edit screen',
     hulpFactuur: 'Log → CSV or PDF button at end of month',
     hulpBackup: 'Download JSON regularly for backup',
     hulpKalender: 'Green = worked, Red = not worked',
-    onkosten: 'Expenses',
-    nieuweOnkost: 'New expense',
-    tanken: 'Fuel',
-    etenDrinken: 'Food & Drinks',
-    parkeren: 'Parking',
-    overig: 'Other',
-    omschrijving: 'Description',
-    geenOnkosten: 'No expenses this month',
-    totaalOnkosten: 'Total expenses:',
-    hulpOnkosten: 'Track fuel, parking and other costs',
-    zoekTankstation: 'Find cheap gas station',
-    plakRoute: 'Paste route from WhatsApp',
-    routeHerkend: 'Route recognized',
-    plaatsen: 'places',
-    bonnetje: 'Receipt',
-    fotoToevoegen: 'Add photo',
-    fotoVerwijderen: 'Remove photo',
-    geenFoto: 'No photo'
+    // New v3.0 translations
+    tussenstops: 'Intermediate stops',
+    tussenstopsInfo: 'stops × €5',
+    wachttijd: 'Waiting time',
+    wachttijdInfo: '× 15 min = €5',
+    piektoeslag: 'Peak surcharge',
+    piektoeslagInfo: '+€10',
+    extraBedrag: 'Extra',
+    extraBedragInfo: 'Custom amount',
+    geenWachttijd: 'None',
+    minuten: 'min',
+    basisprijs: 'Base price',
+    toeslagen: 'Surcharges'
   }
 };
 
-// Tarieven (Leander's tarieven)
-const TARIEF_PER_KM = 0.49;
-const TARIEF_PER_UUR = 31;
+// Tarieven (uit analyse declaraties)
+const TARIEF_PER_KM = 0.55;
+const TARIEF_PER_UUR = 32;
+const TARIEF_TUSSENSTOP = 5;
+const TARIEF_WACHTTIJD = 5; // per 15 minuten
+const TARIEF_PIEKTOESLAG = 10;
 
 // Afstanden vanaf Houten (enkele reis in km)
 const AFSTANDEN = {
@@ -213,7 +204,8 @@ const AFSTANDEN = {
   'zuidhorn': 175, 'spaubeek': 165, 'milsbeek': 110, 'rockanje': 85,
   'geldermalsen': 25, 'beuningen': 65, 'heteren': 50, 'opheusden': 35,
   'kockengen': 15, 'maarssen': 15, 'reeuwijk': 35, 'nieuwkoop': 30, 'mijdrecht': 25,
-  'benschop': 18, 'krimpen': 50, 'ulvenhout': 80, 'wijchen': 65, 'heiloo': 70, 'limmen': 65
+  'benschop': 18, 'krimpen': 50, 'ulvenhout': 80, 'wijchen': 65, 'heiloo': 70, 'limmen': 65,
+  'made': 80, 'goes': 120, 'spijkenisse': 75
 };
 
 // VW Caddy SVG Icon
@@ -238,19 +230,33 @@ const berekenKilometers = (route) => {
   return Math.round((verste * 2) + extra);
 };
 
+// Bereken tussenstops uit route
+// Route format: Houten-X-Y-Z-Houten
+// Tussenstops = aantal plaatsen na Houten min de laatste (die telt niet mee)
+// Voorbeeld: Houten-Utrecht-Amsterdam-Haarlem-Houten = 3 stops, maar laatste telt niet = 2 tussenstops
+const berekenTussenstops = (route) => {
+  if (!route) return 0;
+  
+  // Split op streepjes en filter lege strings
+  const parts = route.split('-').map(s => s.trim().toLowerCase()).filter(s => s.length > 0);
+  
+  // Filter "houten" eruit
+  const stopsZonderHouten = parts.filter(s => s !== 'houten');
+  
+  // Tussenstops = alle stops min de laatste (eindbestemming telt niet)
+  const aantalTussenstops = Math.max(0, stopsZonderHouten.length - 1);
+  
+  return aantalTussenstops;
+};
+
 // Kalender component
-const Kalender = ({ maand, jaar, ritten, t, darkMode, primaryColor, onDagKlik }) => {
+const Kalender = ({ maand, jaar, ritten, t, darkMode, primaryColor }) => {
   const eersteDag = new Date(jaar, maand, 1);
   const laatsteDag = new Date(jaar, maand + 1, 0);
   const aantalDagen = laatsteDag.getDate();
   const startDag = eersteDag.getDay();
   
-  // Map van dag naar ritten
-  const rittenPerDag = {};
-  ritten.forEach(r => {
-    if (!rittenPerDag[r.dagNummer]) rittenPerDag[r.dagNummer] = [];
-    rittenPerDag[r.dagNummer].push(r);
-  });
+  const ritDagen = new Set(ritten.map(r => r.dagNummer));
   
   const weken = [];
   let week = [];
@@ -279,11 +285,8 @@ const Kalender = ({ maand, jaar, ritten, t, darkMode, primaryColor, onDagKlik })
   return (
     <div className="rounded-xl shadow overflow-hidden mb-4" style={{background: darkMode ? '#16213e' : 'white'}}>
       <div className="p-3 border-b" style={{borderColor: darkMode ? '#374151' : '#e5e7eb'}}>
-        <div className="font-bold flex items-center justify-between" style={{color: primaryColor}}>
-          <span className="flex items-center gap-2">📅 {t.kalender}</span>
-          <span className="text-xs font-normal" style={{color: darkMode ? '#9ca3af' : '#6b7280'}}>
-            {t.tikOpDag || 'Tik op een dag'}
-          </span>
+        <div className="font-bold flex items-center gap-2" style={{color: primaryColor}}>
+          📅 {t.kalender}
         </div>
       </div>
       <div className="p-3">
@@ -299,17 +302,15 @@ const Kalender = ({ maand, jaar, ritten, t, darkMode, primaryColor, onDagKlik })
             {week.map((dag, di) => {
               if (!dag) return <div key={di} className="h-8" />;
               
-              const dagRitten = rittenPerDag[dag] || [];
-              const heeftRit = dagRitten.length > 0;
+              const heeftRit = ritDagen.has(dag);
               const isVandaag = isHuidigeMaand && dag === vandaagDag;
               const isVerleden = new Date(jaar, maand, dag) < new Date(vandaag.getFullYear(), vandaag.getMonth(), vandaag.getDate());
               const isWeekend = di === 0 || di === 6;
               
               return (
-                <button 
+                <div 
                   key={di} 
-                  onClick={() => onDagKlik(dag, dagRitten)}
-                  className={`h-8 rounded flex items-center justify-center text-sm relative ${isVandaag ? 'ring-2 ring-offset-1' : ''} hover:opacity-80 transition cursor-pointer`}
+                  className={`h-8 rounded flex items-center justify-center text-sm relative ${isVandaag ? 'ring-2 ring-offset-1' : ''}`}
                   style={{
                     background: heeftRit ? '#22c55e' : (isVerleden ? (isWeekend ? '#f87171' : '#ef4444') : (darkMode ? '#374151' : (isWeekend ? '#e5e7eb' : '#f3f4f6'))),
                     color: heeftRit || isVerleden ? 'white' : (darkMode ? '#e4e4e7' : '#374151'),
@@ -318,8 +319,7 @@ const Kalender = ({ maand, jaar, ritten, t, darkMode, primaryColor, onDagKlik })
                   }}
                 >
                   {dag}
-                  {heeftRit && <span className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full text-white text-xs flex items-center justify-center">{dagRitten.length}</span>}
-                </button>
+                </div>
               );
             })}
           </div>
@@ -337,6 +337,29 @@ const Kalender = ({ maand, jaar, ritten, t, darkMode, primaryColor, onDagKlik })
   );
 };
 
+// Wachttijd Selector Component
+const WachttijdSelector = ({ value, onChange, t, darkMode, primaryColor }) => {
+  const opties = [0, 1, 2, 3, 4, 5, 6, 7, 8]; // 0 tot 8 × 15 min = tot 2 uur
+  
+  return (
+    <div className="flex flex-wrap gap-2">
+      {opties.map(opt => (
+        <button
+          key={opt}
+          onClick={() => onChange(opt)}
+          className={`px-3 py-2 rounded-lg text-sm font-medium transition ${value === opt ? 'text-white' : ''}`}
+          style={{
+            background: value === opt ? primaryColor : (darkMode ? '#374151' : '#f3f4f6'),
+            color: value === opt ? 'white' : (darkMode ? '#e4e4e7' : '#374151')
+          }}
+        >
+          {opt === 0 ? t.geenWachttijd : `${opt * 15} ${t.minuten}`}
+        </button>
+      ))}
+    </div>
+  );
+};
+
 // Edit Modal Component
 const EditModal = ({ rit, onSave, onCancel, onDelete, t, darkMode, primaryColor, lang }) => {
   const [editData, setEditData] = useState({
@@ -346,7 +369,12 @@ const EditModal = ({ rit, onSave, onCancel, onDelete, t, darkMode, primaryColor,
     kilometers: rit.kilometers || '',
     totaalBedrag: rit.totaalBedrag || '',
     isUurloon: rit.isUurloon || false,
-    uren: rit.uren || ''
+    uren: rit.uren || '',
+    // Nieuwe v3.0 velden
+    tussenstops: rit.tussenstops || 0,
+    wachttijd: rit.wachttijd || 0,
+    piektoeslag: rit.piektoeslag || false,
+    extraBedrag: rit.extraBedrag || ''
   });
 
   const cardBg = darkMode ? '#16213e' : 'white';
@@ -354,29 +382,45 @@ const EditModal = ({ rit, onSave, onCancel, onDelete, t, darkMode, primaryColor,
   const textMuted = darkMode ? '#a1a1aa' : '#6b7280';
   const borderColor = darkMode ? '#374151' : '#e5e7eb';
 
+  // Bereken tussenstops automatisch bij route wijziging
+  useEffect(() => {
+    const autoTussenstops = berekenTussenstops(editData.route);
+    setEditData(prev => ({...prev, tussenstops: autoTussenstops}));
+  }, [editData.route]);
+
   // Bereken preview bedrag
-  let previewBedrag = null;
+  let basisBedrag = 0;
   if (editData.isUurloon) {
     const uren = parseFloat(editData.uren) || 0;
-    if (uren > 0) previewBedrag = uren * TARIEF_PER_UUR;
+    if (uren > 0) basisBedrag = uren * TARIEF_PER_UUR;
   } else {
     const km = parseInt(editData.kilometers) || 0;
-    if (km > 0) previewBedrag = km * TARIEF_PER_KM;
+    if (km > 0) basisBedrag = km * TARIEF_PER_KM;
   }
+  
+  const tussenstopsBedrag = (editData.tussenstops || 0) * TARIEF_TUSSENSTOP;
+  const wachttijdBedrag = (editData.wachttijd || 0) * TARIEF_WACHTTIJD;
+  const piektoeslagBedrag = editData.piektoeslag ? TARIEF_PIEKTOESLAG : 0;
+  const extraBedragNum = parseFloat(editData.extraBedrag) || 0;
+  
+  const totaalVoorCorrectie = basisBedrag + tussenstopsBedrag + wachttijdBedrag + piektoeslagBedrag + extraBedragNum;
 
   const handleSave = () => {
     if (!editData.route) { alert(t.vulRouteIn); return; }
     
     let totaalBedrag, correctie;
+    const basis = basisBedrag || (editData.totaalBedrag ? parseFloat(editData.totaalBedrag) : 0);
+    
     if (editData.isUurloon) {
-      totaalBedrag = editData.totaalBedrag ? parseFloat(editData.totaalBedrag) : previewBedrag;
-      correctie = totaalBedrag;
+      totaalBedrag = basis + tussenstopsBedrag + wachttijdBedrag + piektoeslagBedrag + extraBedragNum;
+      correctie = totaalBedrag; // Geen 6% correctie voor uurloon
     } else {
-      totaalBedrag = editData.totaalBedrag ? parseFloat(editData.totaalBedrag) : previewBedrag;
-      correctie = Math.round(totaalBedrag * 0.94 * 100) / 100;
+      const basisNaCorrectie = basis * 0.94;
+      totaalBedrag = basis + tussenstopsBedrag + wachttijdBedrag + piektoeslagBedrag + extraBedragNum;
+      correctie = Math.round((basisNaCorrectie + tussenstopsBedrag + wachttijdBedrag + piektoeslagBedrag + extraBedragNum) * 100) / 100;
     }
     
-    if (!totaalBedrag) { alert(t.konNietBerekenen); return; }
+    if (!totaalBedrag && totaalBedrag !== 0) { alert(t.konNietBerekenen); return; }
     
     const datum = new Date(editData.datum);
     const DAGEN_NL = ['Zondag', 'Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterdag'];
@@ -394,7 +438,12 @@ const EditModal = ({ rit, onSave, onCancel, onDelete, t, darkMode, primaryColor,
       totaalBedrag,
       correctie,
       isUurloon: editData.isUurloon,
-      uren: editData.isUurloon ? parseFloat(editData.uren) : null
+      uren: editData.isUurloon ? parseFloat(editData.uren) : null,
+      // Nieuwe velden
+      tussenstops: editData.tussenstops || 0,
+      wachttijd: editData.wachttijd || 0,
+      piektoeslag: editData.piektoeslag || false,
+      extraBedrag: extraBedragNum || 0
     });
   };
 
@@ -460,7 +509,7 @@ const EditModal = ({ rit, onSave, onCancel, onDelete, t, darkMode, primaryColor,
               <div>
                 <label className="text-xs block mb-1" style={{color: textMuted}}>{t.bedrag} €</label>
                 <input type="number" step="0.01" value={editData.totaalBedrag} onChange={e => setEditData({...editData, totaalBedrag: e.target.value})} 
-                  placeholder={previewBedrag ? previewBedrag.toFixed(2) : ''}
+                  placeholder={basisBedrag ? basisBedrag.toFixed(2) : ''}
                   className="w-full border rounded-lg p-2"
                   style={{background: darkMode ? '#374151' : 'white', color: textColor, borderColor}} />
               </div>
@@ -476,19 +525,87 @@ const EditModal = ({ rit, onSave, onCancel, onDelete, t, darkMode, primaryColor,
               <div>
                 <label className="text-xs block mb-1" style={{color: textMuted}}>{t.bedrag} €</label>
                 <input type="number" step="0.01" value={editData.totaalBedrag} onChange={e => setEditData({...editData, totaalBedrag: e.target.value})} 
-                  placeholder={previewBedrag ? previewBedrag.toFixed(2) : ''}
+                  placeholder={basisBedrag ? basisBedrag.toFixed(2) : ''}
                   className="w-full border rounded-lg p-2"
                   style={{background: darkMode ? '#374151' : 'white', color: textColor, borderColor}} />
               </div>
             </div>
           )}
+
+          {/* NIEUWE VELDEN v3.0 */}
+          <div className={`border rounded-lg p-3 space-y-3 ${darkMode ? 'border-gray-600 bg-gray-800/50' : 'border-gray-200 bg-gray-50'}`}>
+            <div className="font-medium text-sm flex items-center gap-2" style={{color: primaryColor}}>
+              💰 {t.toeslagen}
+            </div>
+            
+            {/* Tussenstops */}
+            <div>
+              <div className="flex justify-between items-center mb-1">
+                <label className="text-xs" style={{color: textMuted}}>🚏 {t.tussenstops}</label>
+                <span className="text-xs" style={{color: textMuted}}>{editData.tussenstops} {t.tussenstopsInfo} = €{tussenstopsBedrag}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button onClick={() => setEditData({...editData, tussenstops: Math.max(0, editData.tussenstops - 1)})}
+                  className="w-10 h-10 rounded-lg text-xl font-bold" style={{background: darkMode ? '#374151' : '#e5e7eb'}}>-</button>
+                <div className="flex-1 text-center text-2xl font-bold" style={{color: primaryColor}}>{editData.tussenstops}</div>
+                <button onClick={() => setEditData({...editData, tussenstops: editData.tussenstops + 1})}
+                  className="w-10 h-10 rounded-lg text-xl font-bold" style={{background: darkMode ? '#374151' : '#e5e7eb'}}>+</button>
+              </div>
+            </div>
+            
+            {/* Wachttijd */}
+            <div>
+              <div className="flex justify-between items-center mb-1">
+                <label className="text-xs" style={{color: textMuted}}>⏱️ {t.wachttijd}</label>
+                <span className="text-xs" style={{color: textMuted}}>{editData.wachttijd} {t.wachttijdInfo} = €{wachttijdBedrag}</span>
+              </div>
+              <WachttijdSelector 
+                value={editData.wachttijd} 
+                onChange={(v) => setEditData({...editData, wachttijd: v})} 
+                t={t} 
+                darkMode={darkMode} 
+                primaryColor={primaryColor} 
+              />
+            </div>
+            
+            {/* Piektoeslag */}
+            <div className="flex items-center justify-between">
+              <label className="text-sm flex items-center gap-2" style={{color: textMuted}}>
+                🔥 {t.piektoeslag} <span className="text-xs">({t.piektoeslagInfo})</span>
+              </label>
+              <button 
+                onClick={() => setEditData({...editData, piektoeslag: !editData.piektoeslag})}
+                className={`w-14 h-8 rounded-full relative transition-colors ${editData.piektoeslag ? '' : ''}`}
+                style={{background: editData.piektoeslag ? primaryColor : (darkMode ? '#374151' : '#d1d5db')}}
+              >
+                <div className={`absolute top-1 w-6 h-6 bg-white rounded-full shadow transition-transform ${editData.piektoeslag ? 'translate-x-7' : 'translate-x-1'}`}></div>
+              </button>
+            </div>
+            
+            {/* Extra bedrag */}
+            <div>
+              <div className="flex justify-between items-center mb-1">
+                <label className="text-xs" style={{color: textMuted}}>➕ {t.extraBedrag}</label>
+                <span className="text-xs" style={{color: textMuted}}>{t.extraBedragInfo}</span>
+              </div>
+              <input 
+                type="number" 
+                step="0.01" 
+                value={editData.extraBedrag} 
+                onChange={e => setEditData({...editData, extraBedrag: e.target.value})} 
+                placeholder="€0"
+                className="w-full border rounded-lg p-2"
+                style={{background: darkMode ? '#374151' : 'white', color: textColor, borderColor}} 
+              />
+            </div>
+          </div>
           
           {/* Preview */}
-          {(previewBedrag || editData.totaalBedrag) && (
-            <div className={`text-center py-2 rounded-lg text-sm font-medium ${editData.isUurloon ? (darkMode ? 'bg-blue-900/30 text-blue-300' : 'bg-blue-50 text-blue-700') : (darkMode ? 'bg-green-900/30 text-green-300' : 'bg-green-50 text-green-700')}`}>
+          {totaalVoorCorrectie > 0 && (
+            <div className={`text-center py-3 rounded-lg font-medium ${editData.isUurloon ? (darkMode ? 'bg-blue-900/30 text-blue-300' : 'bg-blue-50 text-blue-700') : (darkMode ? 'bg-green-900/30 text-green-300' : 'bg-green-50 text-green-700')}`}>
               {editData.isUurloon 
-                ? `💰 ${t.uurloon}: €${(parseFloat(editData.totaalBedrag) || previewBedrag || 0).toFixed(0)} (${t.geenKorting})` 
-                : `💰 ${t.naCorrectie}: €${((parseFloat(editData.totaalBedrag) || previewBedrag || 0) * 0.94).toFixed(0)}`
+                ? `💰 ${t.totaal}: €${totaalVoorCorrectie.toFixed(0)} (${t.geenKorting})` 
+                : `💰 ${t.naCorrectie}: €${((basisBedrag * 0.94) + tussenstopsBedrag + wachttijdBedrag + piektoeslagBedrag + extraBedragNum).toFixed(0)}`
               }
             </div>
           )}
@@ -516,7 +633,6 @@ const EditModal = ({ rit, onSave, onCancel, onDelete, t, darkMode, primaryColor,
 export default function RitLogApp() {
   const [ritten, setRitten] = useState([]);
   const [logboek, setLogboek] = useState([]);
-  const [onkosten, setOnkosten] = useState([]);
   const [huidigeMaand, setHuidigeMaand] = useState(new Date().getMonth());
   const [huidigJaar, setHuidigJaar] = useState(new Date().getFullYear());
   const [view, setView] = useState('invoer');
@@ -525,15 +641,6 @@ export default function RitLogApp() {
   const [loading, setLoading] = useState(true);
   const [saveStatus, setSaveStatus] = useState('');
   const [editingRit, setEditingRit] = useState(null);
-  
-  // Onkosten form state
-  const [nieuweOnkost, setNieuweOnkost] = useState({
-    datum: new Date().toISOString().split('T')[0],
-    type: 'tanken',
-    bedrag: '',
-    omschrijving: '',
-    foto: null // base64 string
-  });
   
   // Taal en thema
   const [lang, setLang] = useState(() => localStorage.getItem('ritlog-lang') || 'nl');
@@ -547,7 +654,12 @@ export default function RitLogApp() {
     kilometers: '',
     totaalBedrag: '',
     isUurloon: false,
-    uren: ''
+    uren: '',
+    // Nieuwe v3.0 velden
+    tussenstops: 0,
+    wachttijd: 0,
+    piektoeslag: false,
+    extraBedrag: ''
   });
   
   const [geschatteKm, setGeschatteKm] = useState(null);
@@ -563,6 +675,12 @@ export default function RitLogApp() {
   useEffect(() => {
     localStorage.setItem('ritlog-dark', darkMode);
   }, [darkMode]);
+  
+  // Bereken tussenstops automatisch bij route wijziging
+  useEffect(() => {
+    const autoTussenstops = berekenTussenstops(nieuwRit.route);
+    setNieuwRit(prev => ({...prev, tussenstops: autoTussenstops}));
+  }, [nieuwRit.route]);
   
   useEffect(() => {
     if (nieuwRit.isUurloon) {
@@ -589,30 +707,20 @@ export default function RitLogApp() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const saved = localStorage.getItem('ritlog-data-v4');
+      const saved = localStorage.getItem('ritlog-data-v3');
       if (saved) {
         const data = JSON.parse(saved);
         setRitten(data.ritten || []);
         setLogboek(data.logboek || []);
-        setOnkosten(data.onkosten || []);
-      } else {
-        // Probeer oude v3 data te laden
-        const oldSaved = localStorage.getItem('ritlog-data-v3');
-        if (oldSaved) {
-          const data = JSON.parse(oldSaved);
-          setRitten(data.ritten || []);
-          setLogboek(data.logboek || []);
-          setOnkosten([]);
-        }
       }
     } catch (e) { console.log('Start nieuw'); }
     setLoading(false);
   };
 
-  const saveData = async (newRitten, newLogboek, newOnkosten = onkosten) => {
+  const saveData = async (newRitten, newLogboek) => {
     setSaveStatus('💾');
     try {
-      localStorage.setItem('ritlog-data-v4', JSON.stringify({ ritten: newRitten, logboek: newLogboek, onkosten: newOnkosten }));
+      localStorage.setItem('ritlog-data-v3', JSON.stringify({ ritten: newRitten, logboek: newLogboek }));
       setSaveStatus('✓');
       setTimeout(() => setSaveStatus(''), 2000);
     } catch (e) { setSaveStatus('⚠'); }
@@ -648,18 +756,15 @@ export default function RitLogApp() {
     const jaar = datumObj.getFullYear();
     const dag = datumObj.getDate();
     
-    // Vind ritten van dezelfde dag
     const rittenVandaag = ritten.filter(r => 
       r.maand === maand && r.jaar === jaar && r.dagNummer === dag
     );
     
     if (rittenVandaag.length > 0) {
-      // Er zijn al ritten vandaag, pak het hoogste nummer + 1
       const hoogsteNummer = Math.max(...rittenVandaag.map(r => r.ritNummer));
       return hoogsteNummer + 1;
     }
     
-    // Geen ritten vandaag, begin bij 1
     return 1;
   };
 
@@ -673,40 +778,64 @@ export default function RitLogApp() {
   const openGoogleMaps = () => {
     if (!nieuwRit.route) return;
     
-    // Maak route string: Houten als start en eind
     const routeParts = nieuwRit.route
       .split(/[-,\/]/)
       .map(s => s.trim())
       .filter(s => s.length > 0);
     
-    // Voeg Houten toe aan begin en eind als niet aanwezig
     const fullRoute = ['Houten', ...routeParts, 'Houten'];
-    
-    // Bouw Google Maps URL met waypoints
-    // Format: /dir/plaats1/plaats2/plaats3/...
     const mapsUrl = 'https://www.google.com/maps/dir/' + fullRoute.map(p => encodeURIComponent(p + ', Nederland')).join('/');
     
     window.open(mapsUrl, '_blank');
+  };
+
+  // Bereken totaalbedrag met alle toeslagen
+  const berekenTotaalMetToeslagen = () => {
+    let basisBedrag = 0;
+    
+    if (nieuwRit.isUurloon) {
+      const uren = parseFloat(nieuwRit.uren) || 0;
+      basisBedrag = uren * TARIEF_PER_UUR;
+    } else {
+      const km = nieuwRit.kilometers ? parseInt(nieuwRit.kilometers) : geschatteKm;
+      if (km) basisBedrag = km * TARIEF_PER_KM;
+    }
+    
+    const tussenstopsBedrag = (nieuwRit.tussenstops || 0) * TARIEF_TUSSENSTOP;
+    const wachttijdBedrag = (nieuwRit.wachttijd || 0) * TARIEF_WACHTTIJD;
+    const piektoeslagBedrag = nieuwRit.piektoeslag ? TARIEF_PIEKTOESLAG : 0;
+    const extraBedragNum = parseFloat(nieuwRit.extraBedrag) || 0;
+    
+    return {
+      basis: basisBedrag,
+      tussenstops: tussenstopsBedrag,
+      wachttijd: wachttijdBedrag,
+      piektoeslag: piektoeslagBedrag,
+      extra: extraBedragNum,
+      totaal: basisBedrag + tussenstopsBedrag + wachttijdBedrag + piektoeslagBedrag + extraBedragNum
+    };
   };
 
   const handleAddRit = async () => {
     if (!nieuwRit.route) { alert(t.vulRouteIn); return; }
     
     const datum = new Date(nieuwRit.datum);
+    const bedragen = berekenTotaalMetToeslagen();
+    
     let totaalBedrag, correctie, kilometers;
     
     if (nieuwRit.isUurloon) {
-      const uren = parseFloat(nieuwRit.uren) || 0;
-      totaalBedrag = nieuwRit.totaalBedrag ? parseFloat(nieuwRit.totaalBedrag) : geschatBedrag;
-      correctie = totaalBedrag;
       kilometers = null;
+      totaalBedrag = bedragen.totaal;
+      correctie = totaalBedrag; // Geen 6% correctie voor uurloon
     } else {
       kilometers = nieuwRit.kilometers ? parseInt(nieuwRit.kilometers) : geschatteKm;
-      totaalBedrag = nieuwRit.totaalBedrag ? parseFloat(nieuwRit.totaalBedrag) : geschatBedrag;
-      correctie = Math.round(totaalBedrag * 0.94 * 100) / 100;
+      const basisNaCorrectie = bedragen.basis * 0.94;
+      totaalBedrag = bedragen.totaal;
+      correctie = Math.round((basisNaCorrectie + bedragen.tussenstops + bedragen.wachttijd + bedragen.piektoeslag + bedragen.extra) * 100) / 100;
     }
     
-    if (!totaalBedrag) { alert(t.konNietBerekenen); return; }
+    if (!totaalBedrag && totaalBedrag !== 0) { alert(t.konNietBerekenen); return; }
     
     const DAGEN_NL = ['Zondag', 'Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterdag'];
     
@@ -724,7 +853,12 @@ export default function RitLogApp() {
       totaalBedrag,
       correctie,
       isUurloon: nieuwRit.isUurloon,
-      uren: nieuwRit.isUurloon ? parseFloat(nieuwRit.uren) : null
+      uren: nieuwRit.isUurloon ? parseFloat(nieuwRit.uren) : null,
+      // Nieuwe v3.0 velden
+      tussenstops: nieuwRit.tussenstops || 0,
+      wachttijd: nieuwRit.wachttijd || 0,
+      piektoeslag: nieuwRit.piektoeslag || false,
+      extraBedrag: parseFloat(nieuwRit.extraBedrag) || 0
     };
     
     const newRitten = [...ritten, rit].sort((a, b) => a.datum.localeCompare(b.datum) || a.ritNummer - b.ritNummer);
@@ -734,7 +868,20 @@ export default function RitLogApp() {
     setLogboek(newLog);
     await saveData(newRitten, newLog);
     
-    setNieuwRit({ datum: nieuwRit.datum, ritNummer: parseInt(nieuwRit.ritNummer) + 1, route: '', kilometers: '', totaalBedrag: '', isUurloon: false, uren: '' });
+    // Reset form maar behoud datum en verhoog ritnummer
+    setNieuwRit({ 
+      datum: nieuwRit.datum, 
+      ritNummer: parseInt(nieuwRit.ritNummer) + 1, 
+      route: '', 
+      kilometers: '', 
+      totaalBedrag: '', 
+      isUurloon: false, 
+      uren: '',
+      tussenstops: 0,
+      wachttijd: 0,
+      piektoeslag: false,
+      extraBedrag: ''
+    });
     setView('log');
   };
 
@@ -759,76 +906,6 @@ export default function RitLogApp() {
     setEditingRit(null);
   };
 
-  // Onkosten functies
-  const handleAddOnkost = async () => {
-    if (!nieuweOnkost.bedrag) { alert(lang === 'nl' ? 'Vul een bedrag in' : 'Enter an amount'); return; }
-    
-    const datum = new Date(nieuweOnkost.datum);
-    const onkost = {
-      id: Date.now(),
-      datum: nieuweOnkost.datum,
-      maand: datum.getMonth(),
-      jaar: datum.getFullYear(),
-      type: nieuweOnkost.type,
-      bedrag: parseFloat(nieuweOnkost.bedrag),
-      omschrijving: nieuweOnkost.omschrijving || '',
-      foto: nieuweOnkost.foto || null
-    };
-    
-    const newOnkosten = [...onkosten, onkost].sort((a, b) => a.datum.localeCompare(b.datum));
-    setOnkosten(newOnkosten);
-    await saveData(ritten, logboek, newOnkosten);
-    
-    setNieuweOnkost({ datum: nieuweOnkost.datum, type: 'tanken', bedrag: '', omschrijving: '', foto: null });
-  };
-
-  // Foto handler voor bonnetjes
-  const handleFotoUpload = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    
-    // Resize en compress de foto
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const maxSize = 800; // Max breedte/hoogte
-        let width = img.width;
-        let height = img.height;
-        
-        if (width > height && width > maxSize) {
-          height = (height * maxSize) / width;
-          width = maxSize;
-        } else if (height > maxSize) {
-          width = (width * maxSize) / height;
-          height = maxSize;
-        }
-        
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, width, height);
-        
-        // Compress naar JPEG
-        const base64 = canvas.toDataURL('image/jpeg', 0.7);
-        setNieuweOnkost(prev => ({...prev, foto: base64}));
-      };
-      img.src = event.target.result;
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleDeleteOnkost = async (id) => {
-    if (!confirm(t.bevestigVerwijderen)) return;
-    const newOnkosten = onkosten.filter(o => o.id !== id);
-    setOnkosten(newOnkosten);
-    await saveData(ritten, logboek, newOnkosten);
-  };
-
-  const maandOnkosten = onkosten.filter(o => o.maand === huidigeMaand && o.jaar === huidigJaar);
-  const totaalOnkosten = maandOnkosten.reduce((s, o) => s + o.bedrag, 0);
-
   const parseSpraak = (text) => {
     let route = text, km = '', bedrag = '', uren = '';
     const kmMatch = text.match(/(\d+)\s*(kilometer|km)/i);
@@ -841,46 +918,6 @@ export default function RitLogApp() {
     setNieuwRit(prev => ({ ...prev, route: route || prev.route, kilometers: km || prev.kilometers, totaalBedrag: bedrag || prev.totaalBedrag, uren: uren || prev.uren, isUurloon: uren ? true : prev.isUurloon }));
   };
 
-  // WhatsApp route parser
-  // Voorbeelden: "ANP Brink - Papendrecht - Wanroij - Arnhem" of "AMP - Dpp - Bussum - Almere"
-  const parseWhatsAppRoute = (text) => {
-    // Verwijder bekende laadlocaties (ANP, DPP, AMP, Brink etc) en behoud bestemmingen
-    let cleaned = text;
-    
-    // Bekende laadlocaties in Houten (verwijderen uit route)
-    const laadLocaties = ['anp', 'amp', 'dpp', 'brink', 'sorgente'];
-    
-    // Split op streepjes, komma's of spaties
-    let delen = cleaned.split(/[-,\s]+/).filter(d => d.trim());
-    
-    // Filter laadlocaties eruit en behoud bestemmingen
-    const bestemmingen = delen.filter(deel => {
-      const lowerDeel = deel.toLowerCase().trim();
-      // Sla laadlocaties over
-      if (laadLocaties.includes(lowerDeel)) return false;
-      // Sla lege strings en hele korte woorden over
-      if (lowerDeel.length < 2) return false;
-      // Sla notities over zoals "laden", "ophalen", "bellen"
-      if (['laden', 'ophalen', 'bellen', 'iets'].includes(lowerDeel)) return false;
-      return true;
-    });
-    
-    if (bestemmingen.length === 0) return null;
-    
-    // Maak route string
-    const routeString = bestemmingen.join('-');
-    
-    return {
-      route: routeString,
-      aantalPlaatsen: bestemmingen.length,
-      plaatsen: bestemmingen
-    };
-  };
-
-  const [showRoutePaste, setShowRoutePaste] = useState(false);
-  const [routePasteText, setRoutePasteText] = useState('');
-  const [parsedRoute, setParsedRoute] = useState(null);
-
   const maandRitten = ritten.filter(r => r.maand === huidigeMaand && r.jaar === huidigJaar);
   const totaalExclBTW = maandRitten.reduce((s, r) => s + (r.correctie || 0), 0);
   const btw = totaalExclBTW * 0.21;
@@ -889,9 +926,11 @@ export default function RitLogApp() {
 
   const exportCSV = () => {
     const maandNaam = t.maanden[huidigeMaand];
-    let csv = `${maandNaam},${t.datum},${t.rit},${t.route},${t.km},${t.totaal}\n`;
-    maandRitten.forEach(r => csv += `${r.dagNaam},${r.dagNummer},${r.ritNummer},"${r.route}",${r.kilometers || ''},€${r.correctie?.toFixed(0)}\n`);
-    csv += `\n,,,${t.exclBTW},,€${totaalExclBTW.toFixed(0)}\n,,,${t.btwLabel},,€${btw.toFixed(0)}\n,,,${t.inclBTW},,€${totaalInclBTW.toFixed(0)}\n`;
+    let csv = `${maandNaam},${t.datum},${t.rit},${t.route},${t.km},${t.tussenstops},${t.wachttijd},${t.piektoeslag},${t.extraBedrag},${t.totaal}\n`;
+    maandRitten.forEach(r => {
+      csv += `${r.dagNaam},${r.dagNummer},${r.ritNummer},"${r.route}",${r.kilometers || ''},${r.tussenstops || 0},${(r.wachttijd || 0) * 15},${r.piektoeslag ? '€10' : '-'},€${r.extraBedrag || 0},€${r.correctie?.toFixed(0)}\n`;
+    });
+    csv += `\n,,,,,,,,${t.exclBTW},€${totaalExclBTW.toFixed(0)}\n,,,,,,,,${t.btwLabel},€${btw.toFixed(0)}\n,,,,,,,,${t.inclBTW},€${totaalInclBTW.toFixed(0)}\n`;
     
     const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
     const url = URL.createObjectURL(blob);
@@ -915,18 +954,20 @@ export default function RitLogApp() {
         <title>Jekel Dienstverlening Factuur Bijlage ${maandNaam} ${huidigJaar}</title>
         <style>
           @page { size: A4 landscape; margin: 15mm; }
-          body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; margin: 0; padding: 20px; }
-          h1 { color: #E65100; font-size: 16pt; margin-bottom: 20px; }
+          body { font-family: Calibri, Arial, sans-serif; font-size: 10pt; margin: 0; padding: 20px; }
+          h1 { color: #E65100; font-size: 14pt; margin-bottom: 15px; }
           table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-          th { background: #FFD700; color: black; font-weight: bold; text-align: left; padding: 8px; border: 1px solid #ccc; }
-          td { padding: 6px 8px; border: 1px solid #ccc; text-align: left; }
+          th { background: #FFD700; color: black; font-weight: bold; text-align: left; padding: 6px; border: 1px solid #ccc; font-size: 9pt; }
+          td { padding: 5px 6px; border: 1px solid #ccc; text-align: left; font-size: 9pt; }
           tr:nth-child(even) { background: #f9f9f9; }
           .totals { margin-top: 20px; }
           .totals td { border: none; padding: 4px 8px; }
           .totals .label { text-align: right; font-weight: normal; }
           .totals .amount { text-align: right; }
-          .totals .final { font-weight: bold; font-size: 12pt; border-top: 2px solid #E65100; }
-          .footer { margin-top: 30px; font-size: 9pt; color: #666; }
+          .totals .final { font-weight: bold; font-size: 11pt; border-top: 2px solid #E65100; }
+          .footer { margin-top: 30px; font-size: 8pt; color: #666; }
+          .center { text-align: center; }
+          .right { text-align: right; }
         </style>
       </head>
       <body>
@@ -934,12 +975,16 @@ export default function RitLogApp() {
         <table>
           <thead>
             <tr>
-              <th style="width: 80px;">${maandNaam}</th>
-              <th style="width: 50px;">${t.datum}</th>
-              <th style="width: 40px;">${t.rit}</th>
+              <th style="width: 60px;">${maandNaam}</th>
+              <th style="width: 35px;">${t.datum}</th>
+              <th style="width: 30px;">${t.rit}</th>
               <th>${t.route}</th>
-              <th style="width: 50px; text-align: right;">${t.km}</th>
-              <th style="width: 70px; text-align: right;">${t.totaal}</th>
+              <th style="width: 40px;" class="right">${t.km}</th>
+              <th style="width: 45px;" class="center">🚏</th>
+              <th style="width: 45px;" class="center">⏱️</th>
+              <th style="width: 40px;" class="center">🔥</th>
+              <th style="width: 45px;" class="right">➕</th>
+              <th style="width: 55px;" class="right">${t.totaal}</th>
             </tr>
           </thead>
           <tbody>
@@ -949,31 +994,36 @@ export default function RitLogApp() {
                 <td>${r.dagNummer}</td>
                 <td>${r.ritNummer}</td>
                 <td>${r.route}</td>
-                <td style="text-align: right;">${r.kilometers || '-'}</td>
-                <td style="text-align: right;">€${r.correctie?.toFixed(0)}</td>
+                <td class="right">${r.kilometers || '-'}</td>
+                <td class="center">${r.tussenstops || 0}</td>
+                <td class="center">${r.wachttijd ? (r.wachttijd * 15) + 'm' : '-'}</td>
+                <td class="center">${r.piektoeslag ? '✓' : '-'}</td>
+                <td class="right">${r.extraBedrag ? '€' + r.extraBedrag : '-'}</td>
+                <td class="right">€${r.correctie?.toFixed(0)}</td>
               </tr>
             `).join('')}
           </tbody>
         </table>
         <table class="totals">
           <tr>
-            <td colspan="4"></td>
+            <td colspan="8"></td>
             <td class="label">${t.exclBTW}</td>
             <td class="amount">€${totaalExclBTW.toFixed(0)}</td>
           </tr>
           <tr>
-            <td colspan="4"></td>
+            <td colspan="8"></td>
             <td class="label">${t.btwLabel}</td>
             <td class="amount">€${btw.toFixed(0)}</td>
           </tr>
           <tr class="final">
-            <td colspan="4"></td>
+            <td colspan="8"></td>
             <td class="label">${t.inclBTW}</td>
             <td class="amount">€${totaalInclBTW.toFixed(0)}</td>
           </tr>
         </table>
         <div class="footer">
-          Gegenereerd door RitLog v3.6 • ${new Date().toLocaleDateString('nl-NL')}
+          Gegenereerd door RitLog v3.0 • ${new Date().toLocaleDateString('nl-NL')}<br>
+          🚏 = Tussenstops (€5/stop) • ⏱️ = Wachttijd (€5/15min) • 🔥 = Piektoeslag (€10) • ➕ = Extra
         </div>
       </body>
       </html>
@@ -988,7 +1038,7 @@ export default function RitLogApp() {
   };
 
   const exportBackupJSON = () => {
-    const data = JSON.stringify({ ritten, logboek, exportDatum: new Date().toISOString(), versie: '3.6' }, null, 2);
+    const data = JSON.stringify({ ritten, logboek, exportDatum: new Date().toISOString(), versie: '3.0' }, null, 2);
     const blob = new Blob([data], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -1001,9 +1051,9 @@ export default function RitLogApp() {
   };
 
   const exportBackupExcel = () => {
-    let csv = `${t.dagen[0].slice(0,3)},${t.datum},${t.rit},${t.route},${t.km},${t.bedrag},Correctie,Type,${t.uren}\n`;
+    let csv = `${t.dagen[0].slice(0,3)},${t.datum},${t.rit},${t.route},${t.km},${t.bedrag},Correctie,Type,${t.uren},${t.tussenstops},${t.wachttijd},${t.piektoeslag},${t.extraBedrag}\n`;
     ritten.forEach(r => {
-      csv += `${r.dagNaam},${r.datum},${r.ritNummer},"${r.route}",${r.kilometers || ''},${r.totaalBedrag?.toFixed(2)},${r.correctie?.toFixed(2)},${r.isUurloon ? 'Uur' : 'KM'},${r.uren || ''}\n`;
+      csv += `${r.dagNaam},${r.datum},${r.ritNummer},"${r.route}",${r.kilometers || ''},${r.totaalBedrag?.toFixed(2)},${r.correctie?.toFixed(2)},${r.isUurloon ? 'Uur' : 'KM'},${r.uren || ''},${r.tussenstops || 0},${r.wachttijd || 0},${r.piektoeslag ? 'Ja' : 'Nee'},${r.extraBedrag || 0}\n`;
     });
     
     const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
@@ -1043,6 +1093,9 @@ export default function RitLogApp() {
   const textMuted = darkMode ? '#a1a1aa' : '#6b7280';
   const borderColor = darkMode ? '#374151' : '#e5e7eb';
 
+  // Bereken bedragen voor preview
+  const bedragen = berekenTotaalMetToeslagen();
+
   if (loading) return (
     <div className="flex items-center justify-center h-screen" style={{background: primaryColor}}>
       <div className="text-white text-center">
@@ -1077,35 +1130,27 @@ export default function RitLogApp() {
           </div>
           <div className="flex items-center gap-1">
             {saveStatus && <span className="text-sm bg-white/20 px-2 py-1 rounded mr-2">{saveStatus}</span>}
-            {/* Taal knoppen met vlaggen */}
             <button 
               onClick={() => setLang('nl')}
-              className={`text-xl px-2 py-1 rounded transition ${lang === 'nl' ? 'bg-white/40 ring-2 ring-white' : 'bg-white/20 hover:bg-white/30'}`}
+              className={`text-lg px-2 py-1 rounded transition ${lang === 'nl' ? 'bg-white/40 ring-2 ring-white' : 'bg-white/20 hover:bg-white/30'}`}
               title="Nederlands"
             >
               🇳🇱
             </button>
             <button 
               onClick={() => setLang('en')}
-              className={`text-xl px-2 py-1 rounded transition ${lang === 'en' ? 'bg-white/40 ring-2 ring-white' : 'bg-white/20 hover:bg-white/30'}`}
+              className={`text-lg px-2 py-1 rounded transition ${lang === 'en' ? 'bg-white/40 ring-2 ring-white' : 'bg-white/20 hover:bg-white/30'}`}
               title="English"
             >
               🇬🇧
             </button>
             <div className="w-2"></div>
-            {/* Dark mode toggle - één knop */}
             <button 
               onClick={() => setDarkMode(!darkMode)}
-              className="text-lg px-2 py-1 rounded transition flex items-center justify-center"
-              style={{
-                background: darkMode ? '#1a1a2e' : 'white',
-                color: darkMode ? '#fbbf24' : '#374151',
-                width: '36px',
-                height: '36px'
-              }}
-              title={darkMode ? 'Light mode' : 'Dark mode'}
+              className="text-lg px-2 py-1 rounded bg-white/20 hover:bg-white/30 transition"
+              title={darkMode ? "Light mode" : "Dark mode"}
             >
-              {darkMode ? '🌙' : '☀️'}
+              {darkMode ? '☀️' : '🌙'}
             </button>
           </div>
         </div>
@@ -1117,7 +1162,6 @@ export default function RitLogApp() {
           {[
             {id: 'invoer', icon: '➕', label: t.rit},
             {id: 'log', icon: '📋', label: t.log},
-            {id: 'onkosten', icon: '💸', label: t.onkosten},
             {id: 'backup', icon: '💾', label: t.backup}
           ].map(tab => (
             <button key={tab.id} onClick={() => setView(tab.id)} 
@@ -1127,7 +1171,7 @@ export default function RitLogApp() {
                 color: view === tab.id ? primaryColor : textMuted
               }}>
               <div className="text-xl">{tab.icon}</div>
-              <div className="text-xs">{tab.label}</div>
+              <div className="text-sm">{tab.label}</div>
             </button>
           ))}
         </div>
@@ -1163,20 +1207,6 @@ export default function RitLogApp() {
               t={t} 
               darkMode={darkMode}
               primaryColor={primaryColor}
-              onDagKlik={(dag, dagRitten) => {
-                if (dagRitten.length === 1) {
-                  // 1 rit -> direct bewerken
-                  setEditingRit(dagRitten[0]);
-                } else if (dagRitten.length > 1) {
-                  // Meerdere ritten -> toon eerste (of maak modal)
-                  setEditingRit(dagRitten[0]);
-                } else {
-                  // Geen ritten -> nieuwe rit voor deze dag
-                  const nieuweDatum = `${huidigJaar}-${String(huidigeMaand + 1).padStart(2, '0')}-${String(dag).padStart(2, '0')}`;
-                  setNieuwRit({...nieuwRit, datum: nieuweDatum, ritNummer: 1});
-                  setView('invoer');
-                }
-              }}
             />
             
             <div className="rounded-xl shadow overflow-hidden" style={{background: cardBg}}>
@@ -1213,6 +1243,11 @@ export default function RitLogApp() {
                           <span className="text-sm" style={{color: textMuted}}>#{r.ritNummer}</span>
                           {r.isUurloon && <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">{lang === 'nl' ? 'uur' : 'hr'}</span>}
                           {r.kmGeschat && <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded">±km</span>}
+                          {/* Nieuwe badges voor v3.0 */}
+                          {r.tussenstops > 0 && <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">🚏{r.tussenstops}</span>}
+                          {r.wachttijd > 0 && <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded">⏱️{r.wachttijd * 15}m</span>}
+                          {r.piektoeslag && <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">🔥</span>}
+                          {r.extraBedrag > 0 && <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">+€{r.extraBedrag}</span>}
                         </div>
                         <div className="text-sm truncate" style={{color: textMuted}}>{r.route}</div>
                       </div>
@@ -1327,121 +1362,59 @@ export default function RitLogApp() {
               
               <div>
                 <label className="text-sm block mb-1" style={{color: textMuted}}>{t.routeLabel}</label>
-                <input type="text" value={nieuwRit.route} onChange={e => setNieuwRit({...nieuwRit, route: e.target.value})} 
-                  placeholder={t.routePlaceholder} 
-                  className="w-full border rounded-lg p-3 text-lg"
-                  style={{background: darkMode ? '#374151' : 'white', color: textColor, borderColor}} />
-                
-                {/* WhatsApp route paste knop */}
-                <button 
-                  onClick={() => setShowRoutePaste(!showRoutePaste)}
-                  className="mt-2 w-full py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-2 border-2"
-                  style={{
-                    background: darkMode ? '#1e3a2e' : '#dcfce7',
-                    borderColor: '#22c55e',
-                    color: '#22c55e'
-                  }}
-                >
-                  📱 {t.plakRoute}
-                </button>
-                
-                {/* WhatsApp route paste modal */}
-                {showRoutePaste && (
-                  <div className="mt-2 p-3 rounded-lg border-2" style={{borderColor: '#22c55e', background: darkMode ? '#1e3a2e' : '#f0fdf4'}}>
-                    <textarea
-                      value={routePasteText}
-                      onChange={e => {
-                        setRoutePasteText(e.target.value);
-                        const parsed = parseWhatsAppRoute(e.target.value);
-                        setParsedRoute(parsed);
-                      }}
-                      placeholder={lang === 'nl' ? 'Plak hier de route van WhatsApp...\nbijv: ANP Brink - Papendrecht - Wanroij - Arnhem' : 'Paste route from WhatsApp here...'}
-                      className="w-full border rounded-lg p-2 text-sm"
-                      rows={3}
-                      style={{background: darkMode ? '#374151' : 'white', color: textColor, borderColor}}
-                    />
-                    {parsedRoute && (
-                      <div className="mt-2 p-2 rounded bg-green-100 dark:bg-green-900/30">
-                        <div className="text-sm font-medium text-green-700 dark:text-green-300">
-                          ✓ {t.routeHerkend}: {parsedRoute.aantalPlaatsen} {t.plaatsen}
-                        </div>
-                        <div className="text-xs text-green-600 dark:text-green-400 mt-1">
-                          {parsedRoute.plaatsen.join(' → ')}
-                        </div>
-                      </div>
-                    )}
-                    <div className="flex gap-2 mt-2">
-                      <button 
-                        onClick={() => {
-                          setShowRoutePaste(false);
-                          setRoutePasteText('');
-                          setParsedRoute(null);
-                        }}
-                        className="flex-1 py-2 rounded-lg border text-sm"
-                        style={{borderColor, color: textMuted}}
-                      >
-                        {t.annuleren}
-                      </button>
-                      <button 
-                        onClick={() => {
-                          if (parsedRoute) {
-                            setNieuwRit({...nieuwRit, route: parsedRoute.route});
-                          }
-                          setShowRoutePaste(false);
-                          setRoutePasteText('');
-                          setParsedRoute(null);
-                        }}
-                        disabled={!parsedRoute}
-                        className="flex-1 py-2 rounded-lg text-white text-sm font-medium disabled:opacity-40"
-                        style={{background: '#22c55e'}}
-                      >
-                        ✓ {t.toevoegen}
-                      </button>
-                    </div>
+                <div className="flex gap-2">
+                  <input type="text" value={nieuwRit.route} onChange={e => setNieuwRit({...nieuwRit, route: e.target.value})} 
+                    placeholder={t.routePlaceholder} 
+                    className="flex-1 border rounded-lg p-3 text-lg"
+                    style={{background: darkMode ? '#374151' : 'white', color: textColor, borderColor}} />
+                  <button 
+                    onClick={openGoogleMaps}
+                    disabled={!nieuwRit.route}
+                    className="px-3 py-2 rounded-lg text-sm font-medium border flex items-center gap-1 disabled:opacity-40"
+                    style={{
+                      background: darkMode ? '#374151' : 'white',
+                      borderColor,
+                      color: '#4285f4'
+                    }}
+                    title={t.checkMaps}
+                  >
+                    🗺️
+                  </button>
+                </div>
+                {nieuwRit.route && nieuwRit.tussenstops > 0 && (
+                  <div className="mt-2 text-sm flex items-center gap-2" style={{color: '#9333ea'}}>
+                    🚏 {nieuwRit.tussenstops} {t.tussenstops.toLowerCase()} = €{nieuwRit.tussenstops * TARIEF_TUSSENSTOP}
                   </div>
                 )}
-                
-                <button 
-                  onClick={openGoogleMaps}
-                  disabled={!nieuwRit.route}
-                  className="mt-2 w-full py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-2 border-2 disabled:opacity-40"
-                  style={{
-                    background: darkMode ? '#1e3a5f' : '#e8f4fd',
-                    borderColor: '#4285f4',
-                    color: '#4285f4'
-                  }}
-                >
-                  🗺️ {t.checkMaps}
-                </button>
               </div>
               
               {!nieuwRit.isUurloon ? (
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm block mb-1" style={{color: textMuted}}>
-                      {t.km} <span className="text-xs">({lang === 'nl' ? 'van Google Maps' : 'from Google Maps'})</span>
+                      {t.km} {geschatteKm && !nieuwRit.kilometers && <span className="text-green-600 font-medium">(≈{geschatteKm})</span>}
                     </label>
                     <input 
                       type="number" 
                       value={nieuwRit.kilometers} 
                       onChange={e => setNieuwRit({...nieuwRit, kilometers: e.target.value})} 
-                      placeholder={lang === 'nl' ? 'vul km in' : 'enter km'}
-                      className="w-full border rounded-lg p-3 text-lg"
-                      style={{background: darkMode ? '#374151' : 'white', color: textColor, borderColor}} 
+                      placeholder={geschatteKm ? `${geschatteKm}` : 'km'} 
+                      className={`w-full border rounded-lg p-3 text-lg ${!nieuwRit.kilometers && geschatteKm ? 'bg-green-50 border-green-300 placeholder-green-600' : ''}`}
+                      style={nieuwRit.kilometers || !geschatteKm ? {background: darkMode ? '#374151' : 'white', color: textColor, borderColor} : {}} 
                     />
                   </div>
                   <div>
                     <label className="text-sm block mb-1" style={{color: textMuted}}>
-                      {t.bedrag} € {nieuwRit.kilometers && !nieuwRit.totaalBedrag && <span className="text-green-600 font-medium">(={(parseFloat(nieuwRit.kilometers) * TARIEF_PER_KM).toFixed(2)})</span>}
+                      {t.basisprijs} € {geschatBedrag && !nieuwRit.totaalBedrag && <span className="text-green-600 font-medium">(≈{geschatBedrag})</span>}
                     </label>
                     <input 
                       type="number" 
                       step="0.01" 
                       value={nieuwRit.totaalBedrag} 
                       onChange={e => setNieuwRit({...nieuwRit, totaalBedrag: e.target.value})} 
-                      placeholder={nieuwRit.kilometers ? `${(parseFloat(nieuwRit.kilometers) * TARIEF_PER_KM).toFixed(2)}` : '€'} 
-                      className={`w-full border rounded-lg p-3 text-lg ${nieuwRit.kilometers && !nieuwRit.totaalBedrag ? 'bg-green-50 border-green-300 placeholder-green-600' : ''}`}
-                      style={nieuwRit.totaalBedrag || !nieuwRit.kilometers ? {background: darkMode ? '#374151' : 'white', color: textColor, borderColor} : {}} 
+                      placeholder={geschatBedrag ? `${geschatBedrag}` : '€'} 
+                      className={`w-full border rounded-lg p-3 text-lg ${!nieuwRit.totaalBedrag && geschatBedrag ? 'bg-green-50 border-green-300 placeholder-green-600' : ''}`}
+                      style={nieuwRit.totaalBedrag || !geschatBedrag ? {background: darkMode ? '#374151' : 'white', color: textColor, borderColor} : {}} 
                     />
                   </div>
                 </div>
@@ -1456,7 +1429,7 @@ export default function RitLogApp() {
                   </div>
                   <div>
                     <label className="text-sm block mb-1" style={{color: textMuted}}>
-                      {t.bedrag} € {geschatBedrag && !nieuwRit.totaalBedrag && <span className="text-blue-600 font-medium">(={geschatBedrag})</span>}
+                      {t.basisprijs} € {geschatBedrag && !nieuwRit.totaalBedrag && <span className="text-blue-600 font-medium">(={geschatBedrag})</span>}
                     </label>
                     <input 
                       type="number" 
@@ -1470,206 +1443,116 @@ export default function RitLogApp() {
                   </div>
                 </div>
               )}
+
+              {/* NIEUWE VELDEN v3.0 - Toeslagen sectie */}
+              <div className={`border rounded-lg p-4 space-y-4 ${darkMode ? 'border-gray-600 bg-gray-800/50' : 'border-gray-200 bg-gray-50'}`}>
+                <div className="font-medium text-sm flex items-center gap-2" style={{color: primaryColor}}>
+                  💰 {t.toeslagen}
+                </div>
+                
+                {/* Wachttijd */}
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="text-sm flex items-center gap-1" style={{color: textMuted}}>
+                      ⏱️ {t.wachttijd}
+                    </label>
+                    {nieuwRit.wachttijd > 0 && (
+                      <span className="text-sm font-medium" style={{color: '#ea580c'}}>
+                        +€{nieuwRit.wachttijd * TARIEF_WACHTTIJD}
+                      </span>
+                    )}
+                  </div>
+                  <WachttijdSelector 
+                    value={nieuwRit.wachttijd} 
+                    onChange={(v) => setNieuwRit({...nieuwRit, wachttijd: v})} 
+                    t={t} 
+                    darkMode={darkMode} 
+                    primaryColor={primaryColor} 
+                  />
+                </div>
+                
+                {/* Piektoeslag en Extra bedrag op 1 rij */}
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Piektoeslag */}
+                  <div className="flex flex-col">
+                    <label className="text-sm mb-2 flex items-center gap-1" style={{color: textMuted}}>
+                      🔥 {t.piektoeslag}
+                    </label>
+                    <button 
+                      onClick={() => setNieuwRit({...nieuwRit, piektoeslag: !nieuwRit.piektoeslag})}
+                      className={`flex-1 py-3 rounded-lg font-medium text-sm transition ${nieuwRit.piektoeslag ? 'text-white' : ''}`}
+                      style={{
+                        background: nieuwRit.piektoeslag ? '#dc2626' : (darkMode ? '#374151' : '#f3f4f6'),
+                        color: nieuwRit.piektoeslag ? 'white' : textColor
+                      }}
+                    >
+                      {nieuwRit.piektoeslag ? `✓ +€${TARIEF_PIEKTOESLAG}` : `+€${TARIEF_PIEKTOESLAG}`}
+                    </button>
+                  </div>
+                  
+                  {/* Extra bedrag */}
+                  <div>
+                    <label className="text-sm block mb-2" style={{color: textMuted}}>
+                      ➕ {t.extraBedrag}
+                    </label>
+                    <input 
+                      type="number" 
+                      step="0.01" 
+                      value={nieuwRit.extraBedrag} 
+                      onChange={e => setNieuwRit({...nieuwRit, extraBedrag: e.target.value})} 
+                      placeholder="€0"
+                      className="w-full border rounded-lg p-3 text-lg"
+                      style={{background: darkMode ? '#374151' : 'white', color: textColor, borderColor}} 
+                    />
+                  </div>
+                </div>
+              </div>
               
-              {/* Toon correctie alleen als er een bedrag is (km ingevuld of handmatig bedrag) */}
-              {(nieuwRit.kilometers || nieuwRit.totaalBedrag || (nieuwRit.isUurloon && nieuwRit.uren)) && (
-                <div className={`text-center py-3 rounded-lg font-medium ${nieuwRit.isUurloon ? (darkMode ? 'bg-blue-900/30 text-blue-300' : 'bg-blue-50 text-blue-700') : (darkMode ? 'bg-green-900/30 text-green-300' : 'bg-green-50 text-green-700')}`}>
-                  {nieuwRit.isUurloon 
-                    ? `💰 ${t.uurloon}: €${(parseFloat(nieuwRit.totaalBedrag) || (parseFloat(nieuwRit.uren) * TARIEF_PER_UUR) || 0).toFixed(0)} (${t.geenKorting})` 
-                    : `💰 ${t.naCorrectie}: €${((parseFloat(nieuwRit.totaalBedrag) || (parseFloat(nieuwRit.kilometers) * TARIEF_PER_KM) || 0) * 0.94).toFixed(0)}`
-                  }
+              {/* Preview totaal */}
+              {bedragen.totaal > 0 && (
+                <div className={`rounded-lg p-4 ${nieuwRit.isUurloon ? (darkMode ? 'bg-blue-900/30' : 'bg-blue-50') : (darkMode ? 'bg-green-900/30' : 'bg-green-50')}`}>
+                  <div className="text-sm space-y-1" style={{color: nieuwRit.isUurloon ? (darkMode ? '#93c5fd' : '#1d4ed8') : (darkMode ? '#86efac' : '#166534')}}>
+                    {bedragen.basis > 0 && (
+                      <div className="flex justify-between">
+                        <span>{t.basisprijs}:</span>
+                        <span>€{bedragen.basis.toFixed(0)} {!nieuwRit.isUurloon && `× 0.94 = €${(bedragen.basis * 0.94).toFixed(0)}`}</span>
+                      </div>
+                    )}
+                    {bedragen.tussenstops > 0 && (
+                      <div className="flex justify-between">
+                        <span>🚏 {nieuwRit.tussenstops} {t.tussenstops.toLowerCase()}:</span>
+                        <span>+€{bedragen.tussenstops}</span>
+                      </div>
+                    )}
+                    {bedragen.wachttijd > 0 && (
+                      <div className="flex justify-between">
+                        <span>⏱️ {nieuwRit.wachttijd * 15} {t.minuten}:</span>
+                        <span>+€{bedragen.wachttijd}</span>
+                      </div>
+                    )}
+                    {bedragen.piektoeslag > 0 && (
+                      <div className="flex justify-between">
+                        <span>🔥 {t.piektoeslag}:</span>
+                        <span>+€{bedragen.piektoeslag}</span>
+                      </div>
+                    )}
+                    {bedragen.extra > 0 && (
+                      <div className="flex justify-between">
+                        <span>➕ {t.extraBedrag}:</span>
+                        <span>+€{bedragen.extra}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className={`text-center pt-3 mt-3 border-t font-bold text-lg ${nieuwRit.isUurloon ? (darkMode ? 'border-blue-700 text-blue-300' : 'border-blue-200 text-blue-700') : (darkMode ? 'border-green-700 text-green-300' : 'border-green-200 text-green-700')}`}>
+                    💰 {t.totaal}: €{nieuwRit.isUurloon 
+                      ? bedragen.totaal.toFixed(0)
+                      : ((bedragen.basis * 0.94) + bedragen.tussenstops + bedragen.wachttijd + bedragen.piektoeslag + bedragen.extra).toFixed(0)
+                    }
+                  </div>
                 </div>
               )}
               
               <button onClick={handleAddRit} className="w-full py-4 rounded-lg font-bold text-white text-lg" style={{background: primaryColor}}>✓ {t.toevoegen}</button>
-            </div>
-          </div>
-        )}
-
-        {/* ONKOSTEN */}
-        {view === 'onkosten' && (
-          <div className="space-y-4">
-            {/* Onkosten invoer */}
-            <div className="rounded-xl shadow p-4" style={{background: cardBg}}>
-              <div className="font-bold text-lg mb-4 flex items-center gap-2" style={{color: primaryColor}}>
-                💸 {t.nieuweOnkost}
-              </div>
-              
-              <div className="space-y-4">
-                {/* Datum */}
-                <div>
-                  <label className="text-sm block mb-1" style={{color: textMuted}}>{t.datum}</label>
-                  <input type="date" value={nieuweOnkost.datum} onChange={e => setNieuweOnkost({...nieuweOnkost, datum: e.target.value})} 
-                    className="w-full border rounded-lg p-3" 
-                    style={{background: darkMode ? '#374151' : 'white', color: textColor, borderColor}} />
-                </div>
-                
-                {/* Type */}
-                <div>
-                  <label className="text-sm block mb-2" style={{color: textMuted}}>Type</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {[
-                      {id: 'tanken', icon: '⛽', label: t.tanken},
-                      {id: 'etenDrinken', icon: '☕', label: t.etenDrinken},
-                      {id: 'parkeren', icon: '🅿️', label: t.parkeren},
-                      {id: 'overig', icon: '📦', label: t.overig}
-                    ].map(type => (
-                      <button
-                        key={type.id}
-                        onClick={() => setNieuweOnkost({...nieuweOnkost, type: type.id})}
-                        className={`py-2 px-3 rounded-lg text-sm font-medium flex items-center justify-center gap-2 ${nieuweOnkost.type === type.id ? 'text-white' : ''}`}
-                        style={{
-                          background: nieuweOnkost.type === type.id ? primaryColor : (darkMode ? '#374151' : '#f3f4f6'),
-                          color: nieuweOnkost.type === type.id ? 'white' : textColor
-                        }}
-                      >
-                        {type.icon} {type.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                
-                {/* Zoek tankstation knoppen */}
-                {nieuweOnkost.type === 'tanken' && (
-                  <div className="grid grid-cols-2 gap-2">
-                    <button 
-                      onClick={() => window.open('https://www.google.com/maps/search/tankstation/', '_blank')}
-                      className="py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-1 border-2"
-                      style={{
-                        background: darkMode ? '#1e3a5f' : '#e8f4fd',
-                        borderColor: '#4285f4',
-                        color: '#4285f4'
-                      }}
-                    >
-                      🗺️ Google Maps
-                    </button>
-                    <button 
-                      onClick={() => window.open('https://www.brandstof-zoeker.nl/', '_blank')}
-                      className="py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-1 border-2"
-                      style={{
-                        background: darkMode ? '#2d1e3a' : '#fdf4ff',
-                        borderColor: '#a855f7',
-                        color: '#a855f7'
-                      }}
-                    >
-                      ⛽ {lang === 'nl' ? 'Goedkoop Tanken' : 'Cheap Fuel'}
-                    </button>
-                  </div>
-                )}
-                
-                {/* Bedrag en Omschrijving */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm block mb-1" style={{color: textMuted}}>{t.bedrag} €</label>
-                    <input 
-                      type="number" 
-                      step="0.01" 
-                      value={nieuweOnkost.bedrag} 
-                      onChange={e => setNieuweOnkost({...nieuweOnkost, bedrag: e.target.value})} 
-                      placeholder="0.00"
-                      className="w-full border rounded-lg p-3"
-                      style={{background: darkMode ? '#374151' : 'white', color: textColor, borderColor}} 
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm block mb-1" style={{color: textMuted}}>{t.omschrijving}</label>
-                    <input 
-                      type="text" 
-                      value={nieuweOnkost.omschrijving} 
-                      onChange={e => setNieuweOnkost({...nieuweOnkost, omschrijving: e.target.value})} 
-                      placeholder={lang === 'nl' ? 'optioneel' : 'optional'}
-                      className="w-full border rounded-lg p-3"
-                      style={{background: darkMode ? '#374151' : 'white', color: textColor, borderColor}} 
-                    />
-                  </div>
-                </div>
-                
-                {/* Bonnetje foto */}
-                <div>
-                  <label className="text-sm block mb-1" style={{color: textMuted}}>📷 {t.bonnetje}</label>
-                  {nieuweOnkost.foto ? (
-                    <div className="relative">
-                      <img 
-                        src={nieuweOnkost.foto} 
-                        alt="Bonnetje" 
-                        className="w-full h-32 object-cover rounded-lg border"
-                        style={{borderColor}}
-                      />
-                      <button 
-                        onClick={() => setNieuweOnkost({...nieuweOnkost, foto: null})}
-                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ) : (
-                    <label className="block w-full py-3 rounded-lg border-2 border-dashed text-center cursor-pointer hover:opacity-80" style={{borderColor}}>
-                      <span style={{color: textMuted}}>📷 {t.fotoToevoegen}</span>
-                      <input 
-                        type="file" 
-                        accept="image/*" 
-                        capture="environment"
-                        onChange={handleFotoUpload} 
-                        className="hidden" 
-                      />
-                    </label>
-                  )}
-                </div>
-                
-                <button onClick={handleAddOnkost} className="w-full py-3 rounded-lg font-bold text-white" style={{background: primaryColor}}>✓ {t.toevoegen}</button>
-              </div>
-            </div>
-            
-            {/* Onkosten lijst */}
-            <div className="rounded-xl shadow overflow-hidden" style={{background: cardBg}}>
-              <div className="p-4 border-b-2" style={{borderColor: primaryColor}}>
-                <span className="font-bold text-lg" style={{color: primaryColor}}>{t.onkosten}</span>
-              </div>
-              
-              {maandOnkosten.length === 0 ? (
-                <div className="p-8 text-center" style={{color: textMuted}}>
-                  <div className="text-4xl mb-2">💸</div>
-                  <div>{t.geenOnkosten}</div>
-                </div>
-              ) : (
-                <>
-                  {maandOnkosten.map((o, i) => (
-                    <div key={o.id} className="p-4 border-b flex items-center gap-3" style={{borderColor, background: i % 2 ? (darkMode ? '#1e293b' : '#f9fafb') : 'transparent'}}>
-                      <div className="text-2xl">
-                        {o.type === 'tanken' ? '⛽' : o.type === 'etenDrinken' ? '☕' : o.type === 'parkeren' ? '🅿️' : '📦'}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="font-medium flex items-center gap-1">
-                          {t[o.type] || o.type}
-                          {o.foto && <span title={t.bonnetje}>📷</span>}
-                        </div>
-                        <div className="text-sm truncate" style={{color: textMuted}}>
-                          {new Date(o.datum).toLocaleDateString(lang === 'nl' ? 'nl-NL' : 'en-GB')}
-                          {o.omschrijving && ` • ${o.omschrijving}`}
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-bold">€{o.bedrag.toFixed(2)}</div>
-                      </div>
-                      {o.foto && (
-                        <button 
-                          onClick={() => window.open(o.foto, '_blank')}
-                          className="text-blue-400 text-sm"
-                        >
-                          👁️
-                        </button>
-                      )}
-                      <button onClick={() => handleDeleteOnkost(o.id)} className="text-red-400 text-xl">×</button>
-                    </div>
-                  ))}
-                  <div className="p-4" style={{background: darkMode ? '#1e293b' : '#f9fafb'}}>
-                    <div className="flex justify-between font-bold" style={{color: primaryColor}}>
-                      <span>{t.totaalOnkosten}</span>
-                      <span>€{totaalOnkosten.toFixed(2)}</span>
-                    </div>
-                  </div>
-                </>
-              )}
             </div>
           </div>
         )}
@@ -1706,7 +1589,11 @@ export default function RitLogApp() {
               <ul className="mt-2 space-y-1" style={{color: textMuted}}>
                 <li>• <strong>Excel/CSV:</strong> {t.tipExcel}</li>
                 <li>• <strong>JSON:</strong> {t.tipJSON}</li>
-                <li>• {t.tarieven} €{TARIEF_PER_KM}/km {lang === 'nl' ? 'of' : 'or'} €{TARIEF_PER_UUR}/{lang === 'nl' ? 'uur' : 'hour'}</li>
+                <li>• {t.tarieven}</li>
+                <li className="ml-4">- €{TARIEF_PER_KM}/km {lang === 'nl' ? 'of' : 'or'} €{TARIEF_PER_UUR}/{lang === 'nl' ? 'uur' : 'hour'}</li>
+                <li className="ml-4">- 🚏 €{TARIEF_TUSSENSTOP}/{lang === 'nl' ? 'tussenstop' : 'stop'}</li>
+                <li className="ml-4">- ⏱️ €{TARIEF_WACHTTIJD}/15min</li>
+                <li className="ml-4">- 🔥 €{TARIEF_PIEKTOESLAG} {t.piektoeslag.toLowerCase()}</li>
               </ul>
             </div>
             
@@ -1714,7 +1601,6 @@ export default function RitLogApp() {
               <strong>📖 {t.gebruiksaanwijzing}</strong>
               <ul className="mt-2 space-y-1 text-sm" style={{color: textMuted}}>
                 <li>➕ <strong>{t.rit} {lang === 'nl' ? 'toevoegen' : 'add'}:</strong> {t.hulpRitToevoegen}</li>
-                <li>🗺️ <strong>Google Maps:</strong> {t.hulpGoogleMaps}</li>
                 <li>✏️ <strong>{t.rit} {lang === 'nl' ? 'bewerken' : 'edit'}:</strong> {t.hulpRitBewerken}</li>
                 <li>🗑️ <strong>{t.rit} {lang === 'nl' ? 'verwijderen' : 'delete'}:</strong> {t.hulpRitVerwijderen}</li>
                 <li>📄 <strong>{lang === 'nl' ? 'Factuur maken' : 'Create invoice'}:</strong> {t.hulpFactuur}</li>
@@ -1728,7 +1614,7 @@ export default function RitLogApp() {
       
       <div className="text-center py-6 text-sm flex items-center justify-center gap-2" style={{color: textMuted}}>
         <CaddyIcon size={20} color={textMuted} /> 
-        <span>RitLog v3.6 • Jekel Dienstverlening</span>
+        <span>RitLog v3.0 • Jekel Dienstverlening</span>
       </div>
     </div>
   );
